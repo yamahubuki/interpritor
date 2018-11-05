@@ -6,15 +6,16 @@ class Main {
 
 	public static void main(String[] args) {
 		PushbackReader pr;
+		String fileName="test1.bas";
+		if (args.length>0){
+			fileName=args[0];
+		}
 		try{
-			String fileName="test1.bas";
-			if (args.length>0){
-				fileName=args[0];
-			}
+
 			FileReader fr = new FileReader(fileName);
 			pr = new PushbackReader(fr);
 		} catch(IOException e) {
-			System.out.println("読み込めませんでした。");
+			System.out.println(fileName+"を読み込めませんでした。");
 			return;
 		}
 		LexicalAnalyzerImpl la=new LexicalAnalyzerImpl(pr);
@@ -30,20 +31,13 @@ class Main {
 				}
 			}
 		} catch (Exception e){
-			System.out.println(e.toString());
+			System.out.println(e);
 		} finally {
 			try {
 				pr.close();
 			} catch(IOException e){
 				System.out.println("ファイルのクローズに失敗しました。");
-
 			}
 		}
 	}
 }
-
-
-
-
-
-

@@ -73,6 +73,8 @@ public class LexicalUnit {
 	    	return ("DOT");
 	    case WHILE:
 	    	return ("WHILE");
+		case DO:
+			return ("DO");
 	    case UNTIL:
 	    	return ("UNTIL");
 	    case ADD:

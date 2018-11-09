@@ -84,32 +84,48 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 	public void unget(LexicalUnit token) throws Exception{
 	}
 
-	private LexicalUnit getLiteral(){	//先頭が"または'の場合
+	private LexicalUnit getLiteral() throws Exception {	//先頭が"または'の場合
 		String s="";					//結果文字列格納用。前後の\"や\'は入れないようにする。
 		char c;							//一時的な保存領域
 		try {
 			char openChar=(char)r.read();	//開いた記号。\"か\'のいずれかが入るはず
-			while(getNextCharType()!=CharType.EOF){
-				c=(char)r.read();
-				if ((char)c==openChar){			//リテラル終端に到達
-					break;
-				} 
-				s+=(char)c;
-			}		
+			while(true){
+				if (getNextCharType()!=CharType.EOF){
+					c=(char)r.read();
+					if ((char)c==openChar){			//リテラル終端に到達
+						break;
+					} 
+					if ((char)c=='\r' || (char)c=='\n'){
+						throw new Exception("\r or \n in Literal.");
+					}
+					s+=(char)c;
+				} else {
+					throw new Exception("Literal not closed.");
+				}
+			}
 		} catch (Exception e){
-			System.out.println("type判定中の例外:"+e);
+			System.out.println("Literal取得中の例外:"+e);
 		}
 		return new LexicalUnit(LexicalType.LITERAL,new ValueImpl(s));
 	}
 
 	private LexicalUnit getString(){	//先頭がアルファベット
 		String target="";
-		while(getNextCharType()==CharType.LETTER || getNextCharType()==CharType.DIGIT){
-			try {
-				target+=(char)r.read();
-			} catch (Exception e){
-				System.out.println("getStringでの例外:"+e);
+		while(true){
+			if (getNextCharType()==CharType.LETTER || getNextCharType()==CharType.DIGIT){
+				try {
+					target+=(char)r.read();
+					continue;
+				} catch (Exception e){
+					System.out.println("getStringでの例外:"+e);
+				}
 			}
+			if (getNextCharType()==CharType.ESCAPE){
+					target+=escapeProcess();
+					continue;
+			}
+			break;
+
 		}
 		if (RESERVED_WORD.containsKey(target.toLowerCase())==true){		//予約語
 			return new LexicalUnit((LexicalType)RESERVED_WORD.get(target.toLowerCase()));
@@ -190,6 +206,8 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 		char c=(char)ci;
 		if (c==' ' || c=='\t'){
 			return CharType.SKIP;
+		} else if (c=='\\'){
+			return CharType.ESCAPE;
 		} else if (Character.isLetter(c)){
 			return CharType.LETTER;
 		} else if (Character.isDigit(c)){
@@ -200,5 +218,33 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 			return CharType.SYMBOL;
 		}
 		return CharType.OTHER;
+	}
+
+	private char escapeProcess(){
+		char c;
+		try {
+			for(int i=0;i<2;i++){		//２文字読みだす
+				if (getNextCharType()!=CharType.EOF){
+					c=(char)r.read();
+				} else {
+					throw new Exception("EOF found in the \"escapeProcess()\"");
+				}
+				switch (c){
+					case '\\':
+						return '\\';
+					case 'n':
+						return '\n';
+					case 'r':
+						return '\r';
+					case 't':
+						return '\t';
+					default:
+						return c;
+				}
+			}
+		} catch (Exception e){
+			System.out.println("escapeProcessでの例外:"+e);
+		}
+		throw new InternalError();
 	}
 }

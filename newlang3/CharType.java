@@ -2,6 +2,7 @@ package newlang3;
 
 public enum CharType {
 	SKIP,			//半角スペースとタブ文字
+	ESCAPE,			//半角の\
 	LETTER,			//半角アルファベット
 	DIGIT,			//半角数字
 	LITERAL,		//"と'

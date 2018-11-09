@@ -91,6 +91,10 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 			char openChar=(char)r.read();	//開いた記号。\"か\'のいずれかが入るはず
 			while(true){
 				if (getNextCharType()!=CharType.EOF){
+					if (getNextCharType()==CharType.ESCAPE){
+						s+=escapeProcess();
+						continue;
+					}
 					c=(char)r.read();
 					if ((char)c==openChar){			//リテラル終端に到達
 						break;
@@ -121,8 +125,8 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 				}
 			}
 			if (getNextCharType()==CharType.ESCAPE){
-					target+=escapeProcess();
-					continue;
+				target+=escapeProcess();
+				continue;
 			}
 			break;
 

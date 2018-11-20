@@ -18,33 +18,70 @@ public class ValueImpl {
 		} catch (Exception e){
 			iValue=0;
 		}
+		try {
+			dValue=Double.parseDouble(s);
+		} catch (Exception e){
+			iValue=0;
+		}
+		if (s!=""){
+			bValue=true;
+		}
 	}
-//	public Value(int i);
-//	public Value(double d);
-//	public Value(boolean b);
+
+	public ValueImpl(int i){
+		vType=ValueType.INTEGER;
+		SValue=String.valueOf(i);
+		iValue=i;
+		dValue=(double)i;
+		if (i!=0){
+			bValue=true;
+		}
+	}
+
+	public ValueImpl(double d){
+		vType=ValueType.DOUBLE;
+		SValue=String.valueOf(d);
+		dValue=d;
+		iValue=(int)d;
+		if (d!=0.00){
+			bValue=true;
+		}
+	}
+
+	public ValueImpl(boolean b){
+		vType=ValueType.BOOL;
+		SValue=String.valueOf(b);
+		if (b==true){
+			bValue=true;
+			iValue=1;
+			dValue=1.00;
+		}
+	}
+
 //	public String get_sValue();
 
+	// ストリング型で値を取り出す。必要があれば、型変換を行う。
 	public String getSValue(){
 		return SValue;
 	}
-	// ストリング型で値を取り出す。必要があれば、型変換を行う。
+
+	// 整数型で値を取り出す。必要があれば、型変換を行う。
     public int getIValue(){
-		return 0;
+		return iValue;
 	}
-   	// 整数型で値を取り出す。必要があれば、型変換を行う。
-    public double getDValue(){
-		return 0.00;
+
+	// 小数点型で値を取り出す。必要があれば、型変換を行う。
+	public double getDValue(){
+		return dValue;
 	}
-    // 小数点型で値を取り出す。必要があれば、型変換を行う。
-    public boolean getBValue(){
-		return false;
+
+     public boolean getBValue(){
+		return bValue;
 	}
-    // 論理型で値を取り出す。必要があれば、型変換を行う。
+
+
     public ValueType getType(){
 		return vType;
 	}
 }
-
-
-
-//valueOfを使う
+ 

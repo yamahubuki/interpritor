@@ -5,22 +5,23 @@ import java.io.*;
 class Main {
 
 	public static void main(String[] args) {
-		PushbackReader pr;
+		InputStream in;
 		String fileName="test1.bas";
+		LexicalAnalyzer la;
+		LexicalUnit lu;
+
 		if (args.length>0){
 			fileName=args[0];
 		}
-		try{
 
-			FileReader fr = new FileReader(fileName);
-			pr = new PushbackReader(fr);
+		try{
+			in=new FileInputStream(fileName);
 		} catch(IOException e) {
 			System.out.println(fileName+"を読み込めませんでした。");
 			return;
 		}
-		LexicalAnalyzerImpl la=new LexicalAnalyzerImpl(pr);
+		la=new LexicalAnalyzerImpl(in);
 
-		LexicalUnit lu;
 		try {
 			while(true){
 				lu=la.get();
@@ -34,7 +35,7 @@ class Main {
 			System.out.println(e);
 		} finally {
 			try {
-				pr.close();
+				in.close();
 			} catch(IOException e){
 				System.out.println("ファイルのクローズに失敗しました。");
 			}

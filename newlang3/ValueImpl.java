@@ -21,7 +21,7 @@ public class ValueImpl {
 		try {
 			dValue=Double.parseDouble(s);
 		} catch (Exception e){
-			iValue=0;
+			dValue=0;
 		}
 		if (s!=""){
 			bValue=true;
@@ -60,17 +60,14 @@ public class ValueImpl {
 
 //	public String get_sValue();
 
-	// ストリング型で値を取り出す。必要があれば、型変換を行う。
 	public String getSValue(){
 		return SValue;
 	}
 
-	// 整数型で値を取り出す。必要があれば、型変換を行う。
     public int getIValue(){
 		return iValue;
 	}
 
-	// 小数点型で値を取り出す。必要があれば、型変換を行う。
 	public double getDValue(){
 		return dValue;
 	}
@@ -79,9 +76,7 @@ public class ValueImpl {
 		return bValue;
 	}
 
-
     public ValueType getType(){
 		return vType;
 	}
 }
- 

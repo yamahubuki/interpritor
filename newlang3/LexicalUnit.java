@@ -1,14 +1,13 @@
 package newlang3;
 
-
 public class LexicalUnit {
 	LexicalType type;
-	ValueImpl
- value;
+	Value value;
 	LexicalUnit link;
 
 	public LexicalUnit(LexicalType this_type) {
 	    type = this_type;
+		value=null;
 	}
 	
 	public LexicalUnit(LexicalType this_type, ValueImpl this_value) {
@@ -16,8 +15,7 @@ public class LexicalUnit {
 		value = this_value;
 	}
 	
-	public ValueImpl
- getValue() {
+	public ValueImpl getValue() {
 		return value;
 	}
 	

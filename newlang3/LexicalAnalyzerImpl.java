@@ -8,9 +8,10 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 
 	//クラス変数
 	PushbackReader r;
-	private static final Map RESERVED_WORD=new HashMap();
-	private static final Map SYMBOLS=new HashMap();
-	private static final Map ESCAPESEQUENCE=new HashMap();
+	private static final Map<String,LexicalType> RESERVED_WORD=new HashMap<>();
+	private static final Map<String,LexicalType> SYMBOLS=new HashMap<>();
+	private static final Map<String,Character> ESCAPESEQUENCE=new HashMap<>();
+
 
 	static {	//スタティックイニシャライザ　最初に１度だけ実行
 		RESERVED_WORD.put("if",LexicalType.IF);

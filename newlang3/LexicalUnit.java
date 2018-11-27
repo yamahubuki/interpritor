@@ -10,12 +10,12 @@ public class LexicalUnit {
 		value=null;
 	}
 	
-	public LexicalUnit(LexicalType this_type, ValueImpl this_value) {
+	public LexicalUnit(LexicalType this_type, Value this_value) {
 		type = this_type;
 		value = this_value;
 	}
 	
-	public ValueImpl getValue() {
+	public Value getValue() {
 		return value;
 	}
 	

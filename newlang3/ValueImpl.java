@@ -1,6 +1,6 @@
 package newlang3;
 
-public class ValueImpl {
+public class ValueImpl implements Value {
 
 	int iValue=0;
 	double dValue=0.0;

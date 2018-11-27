@@ -25,9 +25,8 @@ class Main {
 		try {
 			while(true){
 				lu=la.get();
-				String tmp=lu.toString();
-				System.out.println(tmp);
-				if (tmp=="EOF"){
+				System.out.println(lu);
+				if (lu.getType()==LexicalType.EOF){
 					break;
 				}
 			}

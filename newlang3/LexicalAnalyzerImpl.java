@@ -8,12 +8,12 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 
 	//クラス変数
 	PushbackReader r;
+	int line=1;
 	private static final Map<String,LexicalType> RESERVED_WORD=new HashMap<>();
 	private static final Map<String,LexicalType> SYMBOLS=new HashMap<>();
 	private static final Map<String,Character> ESCAPESEQUENCE=new HashMap<>();
 
-
-	static {	//スタティックイニシャライザ　最初に１度だけ実行
+	static {
 		RESERVED_WORD.put("if",LexicalType.IF);
 		RESERVED_WORD.put("then",LexicalType.THEN);
 		RESERVED_WORD.put("else",LexicalType.ELSE);
@@ -33,8 +33,6 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 		RESERVED_WORD.put("to",LexicalType.TO);
 		RESERVED_WORD.put("wend",LexicalType.WEND);
 
-		SYMBOLS.put("\n",LexicalType.NL);
-		SYMBOLS.put("\r",LexicalType.NL);
 		SYMBOLS.put(".",LexicalType.DOT);
 		SYMBOLS.put("+",LexicalType.ADD);
 		SYMBOLS.put("-",LexicalType.SUB);
@@ -64,12 +62,15 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 		r=new PushbackReader(new InputStreamReader(in));
 	}
 
-	public LexicalUnit get() throws Exception {
+	public LexicalUnit get() throws IOException,SyntaxException {
 		CharType type;
 		while((type=getNextCharType())==CharType.SKIP){
-			r.read();						//いらないので読み進む
+			r.read();
 		}
-		if (type==CharType.LETTER){
+		if (type==CharType.NEWLINE){
+			lineCount();
+			return new LexicalUnit(LexicalType.NL);
+		} else if (type==CharType.LETTER){
 			return getString();
 		} else if (type==CharType.DIGIT){
 			return getNumber();
@@ -80,7 +81,7 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 		} else if (type==CharType.EOF){
 			return new LexicalUnit(LexicalType.EOF);
 		} else {
-			throw new Exception("解釈不能な文字を見つけました。");
+			throw new SyntaxException("不正な文字を見つけました。("+line+"行目)");
 		}
 	}
 
@@ -91,50 +92,50 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 	public void unget(LexicalUnit token) throws Exception{
 	}
 
-	private LexicalUnit getLiteral() throws Exception {	//先頭が"または'の場合
-		String s="";					//結果文字列格納用。前後の\"や\'は入れないようにする。
+	private void lineCount() throws IOException{
+		int c=r.read();
+		if (c==13){
+			line++;
+		}
+		return;
+	}
+
+	private LexicalUnit getLiteral() throws SyntaxException,IOException {
+		String s="";					//結果文字列。前後の"や'は含まない。
 		char c;							//一時的な保存領域
-		try {
-			char openChar=(char)r.read();	//開いた記号。\"か\'が入るはず
-			while(true){
-				if (getNextCharType()!=CharType.EOF){
-					if (getNextCharType()==CharType.ESCAPE){
-						s+=escapeProcess();
-						continue;
-					}
-					c=(char)r.read();
-					if ((char)c==openChar){			//リテラル終端に到達
-						break;
-					} 
-					if ((char)c=='\r' || (char)c=='\n'){
-						throw new Exception("\r or \n in Literal.");
-					}
-					s+=(char)c;
-				} else {
-					throw new Exception("Literal not closed.");
+		char openChar=(char)r.read();	//開いた記号。"か'が入るはず
+		while(true){
+			if (getNextCharType()!=CharType.EOF){
+				if (getNextCharType()==CharType.ESCAPE){
+					s+=escapeProcess();
+					continue;
 				}
+				if (getNextCharType()==CharType.NEWLINE){
+					throw new SyntaxException("リテラルが閉じられずに改行されました。("+line+"行目)");
+				}
+				c=(char)r.read();
+				if ((char)c==openChar){			//リテラル終端に到達
+					break;
+				} 
+				s+=(char)c;
+			} else {
+				throw new SyntaxException("リテラルが閉じられずにファイル終端に到達しました。("+line+"行目)");
 			}
-		} catch (Exception e){
-			System.out.println("Literal取得中の例外:"+e);
 		}
 		return new LexicalUnit(LexicalType.LITERAL,new ValueImpl(s));
 	}
 
-	private LexicalUnit getString(){	//先頭がアルファベット
+	private LexicalUnit getString() throws IOException{
 		String target="";
 		while(true){
-			try {
-				if (getNextCharType()==CharType.LETTER || getNextCharType()==CharType.DIGIT){
-					target+=(char)r.read();
-					continue;
-				} else if (getNextCharType()==CharType.ESCAPE){
-					target+=escapeProcess();
-					continue;
-				} else {
-					break;
-				}
-			} catch (Exception e){
-				System.out.println("getStringでの例外:"+e);
+			if (getNextCharType()==CharType.LETTER || getNextCharType()==CharType.DIGIT){
+				target+=(char)r.read();
+				continue;
+			} else if (getNextCharType()==CharType.ESCAPE){
+				target+=escapeProcess();
+				continue;
+			} else {
+				break;
 			}
 		}
 		if (RESERVED_WORD.containsKey(target.toLowerCase())==true){		//予約語
@@ -144,29 +145,25 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 		}
 	}
 
-	private LexicalUnit getNumber(){	//先頭が数字の場合
-		String s="";					//結果文字列格納用。前後の\"や\'は入れない
-		char c;							//一時的な保存領域
-		boolean dp=false;				//小数点を見つけたらtrueにする
-		try {
-			while(true){
-				if (getNextCharType()==CharType.DIGIT){		//数字
-					s+=(char)r.read();
-				} else if (getNextCharType()==CharType.SYMBOL){
-					c=(char)r.read();
-					if (c=='.' && dp==false){			//小数点
-						dp=true;
-						s+=c;
-					} else {
-						r.unread(c);
-						break;
-					}
-				} else {									//その他
+	private LexicalUnit getNumber() throws IOException {
+		String s="";				//結果文字列
+		char c;						//一時的な保存領域
+		boolean dp=false;			//途中で小数点を読んだらtrue
+		while(true){
+			if (getNextCharType()==CharType.DIGIT){
+				s+=(char)r.read();
+			} else if (getNextCharType()==CharType.SYMBOL){
+				c=(char)r.read();
+				if (c=='.' && dp==false && getNextCharType()==CharType.DIGIT){
+					dp=true;
+					s+=c;
+				} else {
+					r.unread(c);
 					break;
 				}
+			} else {
+				break;
 			}
-		} catch (Exception e){
-				System.out.println("getNumberでの例外:"+e);
 		}
 		LexicalUnit lu;
 		if(dp){
@@ -179,77 +176,64 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 		return lu;
 	}
 
-	private LexicalUnit getSymbol(){	//先頭が記号
+	private LexicalUnit getSymbol() throws IOException{
 		char c,c2=0;
 		LexicalUnit lu=null;
-		try {
-			c=(char)r.read();
-			if (getNextCharType()==CharType.SYMBOL){		//次も記号
-				c2=(char)r.read();
-			}
-			if (SYMBOLS.get(""+c+c2)!=null){
-				lu=new LexicalUnit((LexicalType)SYMBOLS.get(""+c+c2));
-			} else {
-				if (c2!=0){
-					r.unread(c2);									//２文字目はいらない
-				}
-				lu=new LexicalUnit((LexicalType)SYMBOLS.get(""+c));
-			}
-		} catch (Exception e){
-			System.out.println("getSimbolでの例外:"+e);
-			System.exit(-1);
+		c=(char)r.read();
+		if (getNextCharType()==CharType.SYMBOL){
+			c2=(char)r.read();
 		}
-		throw new InternalError();
+		if (SYMBOLS.get(""+c+c2)!=null){
+			lu=new LexicalUnit((LexicalType)SYMBOLS.get(""+c+c2));
+		} else {
+			if (c2!=0){
+				r.unread(c2);
+			}
+			lu=new LexicalUnit((LexicalType)SYMBOLS.get(""+c));
+		}
+		return lu;
 	}
 
-	private CharType getNextCharType(){
+	private CharType getNextCharType() throws IOException{
 		int ci=0;
-		try {
-			ci=r.read();
-			if (ci<0){
-				return CharType.EOF;
-			}
-			r.unread(ci);
-		} catch (Exception e){
-			System.out.println("getNextCharType内での例外:"+e);
-			System.exit(-1);
+		ci=r.read();
+		if (ci<0){
+			return CharType.EOF;
 		}
+		r.unread(ci);
 		char c=(char)ci;
 		if (c==' ' || c=='\t'){
 			return CharType.SKIP;
+		} else if (c=='\r' || c=='\n'){
+			return CharType.NEWLINE;
 		} else if (c=='\\'){
 			return CharType.ESCAPE;
-		} else if (Character.isLetter(c)){
+		} else if (c>='A' && c<='Z' || c>='a' && c<='z'){
 			return CharType.LETTER;
-		} else if (Character.isDigit(c)){
+		} else if (c>='0' && c<='9'){
 			return CharType.DIGIT;
 		} else if (c=='\"' || c=='\''){
 			return CharType.LITERAL;
 		} else if (SYMBOLS.containsKey(""+c)==true){
 			return CharType.SYMBOL;
 		}
-		System.out.println(c);
 		return CharType.OTHER;
 	}
 
-	private char escapeProcess() throws Exception{
+	private char escapeProcess() throws IOException{
 		String s="";
 		char c;
-		try {
-			s+=(char)r.read();		//先頭の\を読む
-			if (getNextCharType()!=CharType.EOF){
-				c=(char)r.read();	//２文字目を読む
-				s+=c;
-			} else {
-				throw new Exception("EOF found in the \"escapeProcess()\"");
-			}
-			if (ESCAPESEQUENCE.containsKey(s)==true){		//予約語
-				return (char)ESCAPESEQUENCE.get(s);
-			}else {
-				return c;
-			}
-		} catch (Exception e){
-			throw new Exception("escapeProcessでの例外:"+e);
+		s+=(char)r.read();		//先頭の\を読む
+		if (getNextCharType()!=CharType.EOF){
+			c=(char)r.read();	//２文字目を読む
+			s+=c;
+		} else {
+			return ' ';
+		}
+		if (ESCAPESEQUENCE.containsKey(s)==true){
+			return (char)ESCAPESEQUENCE.get(s);
+		}else {
+			return c;
 		}
 	}
 }

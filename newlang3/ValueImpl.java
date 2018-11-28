@@ -8,21 +8,15 @@ public class ValueImpl implements Value {
 	boolean bValue=false;
 	ValueType vType;
 
-
-//  実装すべきコンストラクタ
 	public ValueImpl(String s){
 		vType=ValueType.STRING;
 		SValue=s;
 		try {
 			iValue=Integer.parseInt(s);
-		} catch (Exception e){
-			iValue=0;
-		}
+		} catch (Exception e){}
 		try {
 			dValue=Double.parseDouble(s);
-		} catch (Exception e){
-			dValue=0;
-		}
+		} catch (Exception e){}
 		if (s!=""){
 			bValue=true;
 		}
@@ -57,8 +51,6 @@ public class ValueImpl implements Value {
 			dValue=1.00;
 		}
 	}
-
-//	public String get_sValue();
 
 	public String getSValue(){
 		return SValue;

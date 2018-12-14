@@ -2,7 +2,7 @@ package newlang3;
 
 public class SyntaxException extends Exception {
 
-	SyntaxException(String msg){
+	public SyntaxException(String msg){
 		super(msg);
 	}
 }

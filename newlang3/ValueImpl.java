@@ -71,4 +71,7 @@ public class ValueImpl implements Value {
     public ValueType getType(){
 		return vType;
 	}
+	public String toString(){
+		return getSValue();
+	}
 }

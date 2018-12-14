@@ -3,6 +3,8 @@ package newlang3;
 import java.util.Map;
 import java.util.HashMap;
 import java.io.*;
+import java.util.List;
+import java.util.ArrayList;
 
 public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 
@@ -12,6 +14,8 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 	private static final Map<String,LexicalType> RESERVED_WORD=new HashMap<>();
 	private static final Map<String,LexicalType> SYMBOLS=new HashMap<>();
 	private static final Map<String,Character> ESCAPESEQUENCE=new HashMap<>();
+	private List<LexicalUnit> unitList=new ArrayList<>();
+
 
 	static {
 		RESERVED_WORD.put("if",LexicalType.IF);
@@ -51,11 +55,11 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 		SYMBOLS.put("=>",LexicalType.GE);
 
 		ESCAPESEQUENCE.put("\\\\",'\\');
-		ESCAPESEQUENCE.put("\\\r",'\r');
-		ESCAPESEQUENCE.put("\\\n",'\n');
+		ESCAPESEQUENCE.put("\\r",'\r');
+		ESCAPESEQUENCE.put("\\n",'\n');
 		ESCAPESEQUENCE.put("\\\"",'\"');
 		ESCAPESEQUENCE.put("\\\'",'\'');
-		ESCAPESEQUENCE.put("\\\t",'\t');
+		ESCAPESEQUENCE.put("\\t",'\t');
 	}
 
 	public LexicalAnalyzerImpl(InputStream in){
@@ -63,12 +67,23 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 	}
 
 	public LexicalUnit get() throws IOException,SyntaxException {
+
+		//ungetされたものがないか確認する
+		if (!unitList.isEmpty()){
+			LexicalUnit tmp=unitList.get(unitList.size()-1);
+			unitList.remove(unitList.size()-1);
+			if (tmp.getType()==LexicalType.NL){
+				line++;
+			}
+			return tmp;
+		}
+
 		CharType type;
 		while((type=getNextCharType())==CharType.SKIP){
 			r.read();
 		}
 		if (type==CharType.NEWLINE){
-			lineCount();
+			parseNL();
 			return new LexicalUnit(LexicalType.NL);
 		} else if (type==CharType.LETTER){
 			return getString();
@@ -81,7 +96,7 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 		} else if (type==CharType.EOF){
 			return new LexicalUnit(LexicalType.EOF);
 		} else {
-			throw new SyntaxException("不正な文字を見つけました。("+line+"行目)");
+			throw new SyntaxException("不正な文字"+(char)r.read()+"を見つけました。("+line+"行目)");
 		}
 	}
 
@@ -89,15 +104,40 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 		return false;
 	}
 
-	public void unget(LexicalUnit token) throws Exception{
+	private void unget(LexicalUnit token) throws IOException{
+		if (token.getType()==LexicalType.NL){
+			line--;
+		}
+		unitList.add(token);
 	}
 
-	private void lineCount() throws IOException{
-		int c=r.read();
-		if (c==13){
-			line++;
+	public LexicalUnit check(int c) throws IOException,SyntaxException{
+		List<LexicalUnit> tmpList=new ArrayList<>();
+		for(int i=0;i<c-1;i++){
+			tmpList.add(get());
 		}
-		return;
+
+		LexicalUnit ret=get();
+		tmpList.add(ret);
+
+		while(!tmpList.isEmpty()){
+			unget(tmpList.get(tmpList.size()-1));
+			tmpList.remove((tmpList.size()-1));
+		}
+		return ret;
+	}
+
+	private void parseNL() throws IOException,SyntaxException{
+		while(true){
+			if(getNextCharType()==CharType.NEWLINE){
+				r.read();
+				line++;
+			} else if (getNextCharType()==CharType.SKIP){
+				r.read();
+			} else {
+				break;
+			}
+		}
 	}
 
 	private LexicalUnit getLiteral() throws SyntaxException,IOException {
@@ -202,9 +242,9 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 		}
 		r.unread(ci);
 		char c=(char)ci;
-		if (c==' ' || c=='\t'){
+		if (c==' ' || c=='\t' || c=='\r'){
 			return CharType.SKIP;
-		} else if (c=='\r' || c=='\n'){
+		} else if (c=='\n'){
 			return CharType.NEWLINE;
 		} else if (c=='\\'){
 			return CharType.ESCAPE;
@@ -218,6 +258,10 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 			return CharType.SYMBOL;
 		}
 		return CharType.OTHER;
+	}
+
+	public int getLine(){
+		return line;
 	}
 
 	private char escapeProcess() throws IOException{

@@ -3,7 +3,6 @@ package newlang3;
 public class LexicalUnit {
 	LexicalType type;
 	Value value;
-	LexicalUnit link;
 
 	public LexicalUnit(LexicalType this_type) {
 	    type = this_type;

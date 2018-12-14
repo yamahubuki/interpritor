@@ -56,7 +56,7 @@ public class ValueImpl implements Value {
 		return SValue;
 	}
 
-    public int getIValue(){
+	public int getIValue(){
 		return iValue;
 	}
 
@@ -64,13 +64,14 @@ public class ValueImpl implements Value {
 		return dValue;
 	}
 
-     public boolean getBValue(){
+	public boolean getBValue(){
 		return bValue;
 	}
 
-    public ValueType getType(){
+	public ValueType getType(){
 		return vType;
 	}
+
 	public String toString(){
 		return getSValue();
 	}

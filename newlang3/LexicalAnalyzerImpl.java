@@ -100,10 +100,6 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 		}
 	}
 
-	public boolean expect(LexicalType type) throws Exception{
-		return false;
-	}
-
 	private void unget(LexicalUnit token) throws IOException{
 		if (token.getType()==LexicalType.NL){
 			line--;

@@ -38,5 +38,5 @@ public enum LexicalType {
 	LOOP,		// LOOP
 	TO,			// TO
 	WEND,		// WEND
-	EOF,		// end of file
+	EOF			// end of file
 }

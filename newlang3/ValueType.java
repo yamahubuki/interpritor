@@ -5,5 +5,5 @@ public enum ValueType {
 	INTEGER,
 	STRING,
 	DOUBLE,
-	BOOL,
+	BOOL
 }

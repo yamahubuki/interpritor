@@ -15,7 +15,8 @@
 - Javaのパッケージとなっており、newlang4やnewlang5からも利用している
 - newlang4の作成の過程でいくつかの機能(関数)を追加している。
 
-### newlang3
+
+### newlang3old
 
 - 課題１で作成・提出した当時のnewlang3パッケージ
 

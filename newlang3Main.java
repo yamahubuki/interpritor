@@ -5,7 +5,7 @@ class newlang3Main {
 
 	public static void main(String[] args) {
 		InputStream in;
-		String fileName="test1.bas";
+		String fileName="test.bas";
 		LexicalAnalyzer la;
 		LexicalUnit lu;
 

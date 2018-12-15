@@ -11,7 +11,7 @@ public class newlang4Main {
 	 */
 	public static void main(String[] args) throws Exception {
 			InputStream in;
-			String fileName="test1.bas";
+			String fileName="test.bas";
 			LexicalAnalyzer lex;
 			Environment		env;
 			Node			program;
@@ -33,11 +33,8 @@ public class newlang4Main {
 			env = new Environment(lex);
 
 			program = Program.getHandrar(env);
-			if (program != null && program.parse()) {
-				System.out.println(program);
-//				System.out.println("value = " + program.getValue());
-			} else {
-				System.out.println("syntax error");
-			}
+			program.parse();
+			System.out.println(program.toString(0));
+//			System.out.println("value = " + program.getValue());
 	}
 }

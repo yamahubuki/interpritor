@@ -7,15 +7,10 @@ public class Node {
 	NodeType type;
 	Environment env;
 
-	/** Creates a new instance of Node */
-	public Node() {
-	}
-
 	public NodeType getType() {
 		return type;
 	}
 
-	//文法解析の実行。戻り値で成功or失敗を返す
 	public void parse() throws Exception {
 	}
 

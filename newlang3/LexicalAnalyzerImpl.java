@@ -107,7 +107,11 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 		unitList.add(token);
 	}
 
-	public LexicalUnit check(int c) throws IOException,SyntaxException{
+	public boolean expect(LexicalType type) throws IOException,SyntaxException{
+		return type==peek(1).getType();
+	}
+
+	public LexicalUnit peek(int c) throws IOException,SyntaxException{
 		List<LexicalUnit> tmpList=new ArrayList<>();
 		for(int i=0;i<c-1;i++){
 			tmpList.add(get());

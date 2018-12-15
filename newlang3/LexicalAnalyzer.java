@@ -4,7 +4,8 @@ import java.io.IOException;
 
 
 public interface LexicalAnalyzer {
-	public LexicalUnit check(int i) throws IOException,SyntaxException;
+	public boolean expect(LexicalType type) throws IOException,SyntaxException;
+	public LexicalUnit peek(int i) throws IOException,SyntaxException;
     public LexicalUnit get() throws Exception,SyntaxException;
 	public int getLine();
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import newlang3.*;
+import java.util.Stack;
 
 public class ExprNode extends Node {
 
@@ -76,7 +77,8 @@ public class ExprNode extends Node {
 							break;
 						}
 					}
-
+					stack.add(env.getInput().get());
+					break;
 				case SUB:
 					for(int i=stack.size()-1;i>=0;i--){
 						boolean flg=false;

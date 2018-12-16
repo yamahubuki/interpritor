@@ -6,11 +6,12 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import newlang3.*;
-import java.util.Stack;
 
 public class ExprNode extends Node {
 
-	List result=new ArrayList();
+	Node left=null;
+	Node right=null;
+	LexicalType operator=null;
 
 	//Ž©•ª‚Ìfirst‚ðƒZƒbƒg‚Å‚à‚Á‚Ä‚¨‚­
 	private final static Set<LexicalType> FIRST=new HashSet<LexicalType>(Arrays.asList(
@@ -31,12 +32,19 @@ public class ExprNode extends Node {
 		type=NodeType.EXPR;
 	}
 
+	private ExprNode(Node l,Node r,LexicalType o){
+		left=l;
+		right=r;
+		operator=o;
+	}
+
 	public static Node getHandrar(Environment in){
 		return new ExprNode(in);
 	}
 
 	public void parse() throws Exception {
-		List<LexicalUnit> stack = new ArrayList<>();
+		List<Node> result=new ArrayList<>();
+		List<LexicalType> operators = new ArrayList<>();
 
 		add: while(true){
 			switch(env.getInput().peek(1).getType()){
@@ -64,72 +72,86 @@ public class ExprNode extends Node {
 					}
 					break;
 				case ADD:
-					for(int i=stack.size()-1;i>=0;i--){
+					for(int i=operators.size()-1;i>=0;i--){
 						boolean flg=false;
-						if (stack.get(i).getType()==LexicalType.MUL ||
-							stack.get(i).getType()==LexicalType.DIV ||
-							stack.get(i).getType()==LexicalType.SUB
-						){
+						if (operators.get(i)==LexicalType.MUL ||
+							operators.get(i)==LexicalType.DIV ||
+							operators.get(i)==LexicalType.SUB){
 							flg=true;
-							result.add(stack.get(i));
-							stack.remove(i);
-						} else if (flg=true && stack.get(i).getType()==LexicalType.ADD){
+							result.add(new ExprNode(result.get(result.size()-2),result.get(result.size()-1),operators.get(i)));
+							result.remove(result.size()-3);
+							result.remove(result.size()-2);
+							operators.remove(i);
+						} else if (flg=true && operators.get(i)==LexicalType.ADD){
 							break;
 						}
 					}
-					stack.add(env.getInput().get());
+					operators.add(env.getInput().get().getType());
 					break;
 				case SUB:
-					for(int i=stack.size()-1;i>=0;i--){
+					for(int i=operators.size()-1;i>=0;i--){
 						boolean flg=false;
-						if (stack.get(i).getType()==LexicalType.MUL ||
-						stack.get(i).getType()==LexicalType.DIV){
+						if (operators.get(i)==LexicalType.MUL ||
+						operators.get(i)==LexicalType.DIV ){
 							flg=true;
-							result.add(stack.get(i));
-							stack.remove(i);
+							result.add(new ExprNode(result.get(result.size()-2),result.get(result.size()-1),operators.get(i)));
+							result.remove(result.size()-3);
+							result.remove(result.size()-2);
+							operators.remove(i);
 						} else if (flg=true &&
-						(stack.get(i).getType()==LexicalType.ADD ||
-						stack.get(i).getType()==LexicalType.SUB)){
+						(operators.get(i)==LexicalType.ADD ||
+						operators.get(i)==LexicalType.SUB)){
 							break;
 						}
 					}
-					stack.add(env.getInput().get());
+					operators.add(env.getInput().get().getType());
 					break;
 				case MUL:
-					for(int i=stack.size()-1;i>=0;i--){
+					for(int i=operators.size()-1;i>=0;i--){
 						boolean flg=false;
-						if (stack.get(i).getType()==LexicalType.DIV){
+						if (operators.get(i)==LexicalType.DIV){
 							flg=true;
-							result.add(stack.get(i));
-							stack.remove(i);
+							result.add(new ExprNode(result.get(result.size()-2),result.get(result.size()-1),LexicalType.DIV));
+							result.remove(result.size()-3);
+							result.remove(result.size()-2);
+							operators.remove(i);
 						} else if (flg=true &&
-							(stack.get(i).getType()==LexicalType.ADD ||
-							stack.get(i).getType()==LexicalType.SUB  ||
-							stack.get(i).getType()==LexicalType.MUL)
-						){
+						(operators.get(i)==LexicalType.MUL ||
+						operators.get(i)==LexicalType.ADD ||
+						operators.get(i)==LexicalType.SUB)){
 							break;
 						}
 					}
-					stack.add(env.getInput().get());
+					operators.add(env.getInput().get().getType());
 					break;
 				case DIV:
-					stack.add(env.getInput().get());
+					operators.add(env.getInput().get().getType());
 					break;
 				default:
 					break add;
 			}
 		}
-
-		for(int i=stack.size()-1;i>=0;i--){
-			result.add(stack.get(i));
-		}
+		for(int i=operators.size()-1;i>=0;i--){
+			if (operators.size()==1){
+				left=result.get(0);
+				right=result.get(1);
+				operator=operators.get(0);
+				return;
+			}
+			result.add(new ExprNode(result.get(result.size()-2),result.get(result.size()-1),operators.get(i)));
+			result.remove(result.size()-3);
+			result.remove(result.size()-2);
+		} 
+		left=result.get(0);
 	}
 
 	public String toString() {
-		String tmp=" Ž®[";
-		for(int i=0;i<result.size();i++){
-			tmp+=result.get(i)+" ";
+		String tmp="[";
+		tmp+=left.toString();
+		if (operator!=null){
+			tmp+=" "+operator.toString()+" ";
+			tmp+=right.toString();
 		}
-		return tmp+"] ";
+		return tmp+"]";
 	}
 }

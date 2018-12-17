@@ -123,7 +123,41 @@ public class LoopNode extends Node {
 		return true;
 	}
 
+	public Value getValue() throws Exception{
+		if (isDoMust){		//初回の強制実行
+			operation.getValue();
+			if (!isCondFirst){		//後判定なら継続条件確認
+				if (!judge()){
+					return null;
+				}
+			}
+		}
 
+		while(true){
+			if (isCondFirst){
+				if (!judge()){
+					return null;
+				}
+			}
+
+			operation.getValue();
+
+			if (!isCondFirst){		//後判定なら継続条件確認
+				if (!judge()){
+					return null;
+				}
+			}
+		}
+	}
+
+	private boolean judge() throws Exception {	//処理を継続するか判定
+		if ((cond.getValue().getBValue()==true && isUntill==false) ||
+		(cond.getValue().getBValue()==false && isUntill==true)){
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	public String toString(int indent) {
 		String ret="";

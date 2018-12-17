@@ -6,9 +6,6 @@ import java.io.IOException;
 
 public class newlang4Main {
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) throws Exception {
 			InputStream in;
 			String fileName="test.bas";

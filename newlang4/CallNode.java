@@ -8,7 +8,7 @@ import newlang3.*;
 public class CallNode extends Node {
 
 	String funcName=null;		//ŠÖ”–¼
-	Node arguments=null;		//ˆø”
+	ExprListNode arguments=null;		//ˆø”
 
 	//©•ª‚Ìfirst‚ğƒZƒbƒg‚Å‚à‚Á‚Ä‚¨‚­
 	private final static Set<LexicalType> FIRST=new HashSet<LexicalType>(Arrays.asList(
@@ -26,6 +26,10 @@ public class CallNode extends Node {
 
 	public static Node getHandrar(Environment in){
 		return new CallNode(in);
+	}
+
+	public Value getValue() throws Exception{
+		return env.getFunction(funcName).invoke(arguments);
 	}
 
 	public void parse() throws Exception {

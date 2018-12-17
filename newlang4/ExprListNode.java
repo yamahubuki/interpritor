@@ -30,7 +30,7 @@ public class ExprListNode extends Node {
 		type=NodeType.EXPR_LIST;
 	}
 
-	public static Node getHandrar(Environment envIn){
+	public static ExprListNode getHandrar(Environment envIn){
 		return new ExprListNode(envIn);
 	}
 
@@ -59,6 +59,18 @@ public class ExprListNode extends Node {
 			} else {
 				throw new SyntaxException("関数呼び出しにおける引数リストの構成が不正です。"+env.getInput().getLine()+"行目");
 			}
+		}
+	}
+
+	public int size(){
+		return list.size();
+	}
+
+	public Value get(int i) throws Exception{
+		if (list.size()>=i){
+			return list.get(i).getValue();
+		}else {
+			return null;
 		}
 	}
 

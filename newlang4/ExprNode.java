@@ -5,7 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Stack;
 import newlang3.*;
+import newlang5.*;
 
 public class ExprNode extends Node {
 
@@ -32,7 +34,7 @@ public class ExprNode extends Node {
 		type=NodeType.EXPR;
 	}
 
-	private ExprNode(Node l,Node r,LexicalType o){
+	public ExprNode(Node l,Node r,LexicalType o){
 		left=l;
 		right=r;
 		operator=o;
@@ -62,6 +64,16 @@ public class ExprNode extends Node {
 				case LITERAL:
 					result.add(ConstNode.getHandrar(env,env.getInput().get().getValue()));
 					break;
+				case SUB:
+					if (env.getInput().peek(2).getType()==LexicalType.INTVAL){
+						env.getInput().get();
+						result.add(ConstNode.getHandrar(env,
+						new ExprNode(ConstNode.getHandrar(env,env.getInput().get().getValue()),
+						ConstNode.getHandrar(env,new ValueImpl(-1)),LexicalType.MUL).getValue()));
+					} else {
+						throw new SyntaxException("計算式中において不正な－記号が使われています。");
+					}
+					break;
 				case NAME:
 					if (env.getInput().peek(2).getType()==LexicalType.LP){
 						Node tmpNode=CallNode.getHandrar(env);
@@ -71,6 +83,11 @@ public class ExprNode extends Node {
 						result.add(VariableNode.getHandrar(env,env.getInput().get().getValue()));
 					}
 					break;
+				default:
+					throw new SyntaxException("計算式の構成が不正です。");
+			}
+
+			switch(env.getInput().peek(1).getType()){
 				case ADD:
 					for(int i=operators.size()-1;i>=0;i--){
 						boolean flg=false;
@@ -143,6 +160,56 @@ public class ExprNode extends Node {
 			result.remove(result.size()-2);
 		} 
 		left=result.get(0);
+	}
+
+	public Value getValue() throws Exception{
+		if (operator==null){
+			return left.getValue();
+		}
+		Value val1=left.getValue();
+		Value val2=right.getValue();
+		if (val1==null || val2==null){
+			throw new CalcurateException("nullに対して演算を試みました。");
+		}
+		if (val1.getType()==ValueType.STRING || val2.getType()==ValueType.STRING){
+			if (operator==LexicalType.ADD){
+				return new ValueImpl(val1.getSValue()+val2.getSValue());
+			} else {
+				throw new CalcurateException("文字列に対して減算・乗算・除算を行う事はできません。");
+			}
+		} else if(val1.getType()==ValueType.DOUBLE || val2.getType()==ValueType.DOUBLE){
+			if (operator==LexicalType.ADD){
+				return new ValueImpl(val1.getDValue()+val2.getDValue());
+			} else if (operator==LexicalType.SUB){
+				return new ValueImpl(val1.getDValue()-val2.getDValue());
+			} else if (operator==LexicalType.MUL){
+				return new ValueImpl(val1.getDValue()*val2.getDValue());
+			} else if (operator==LexicalType.DIV){
+				if (val2.getDValue()!=0.00){
+					return new ValueImpl(val1.getDValue()/val2.getDValue());
+				} else {
+					throw new CalcurateException("0で除算しました。");
+				}
+			} else {
+				throw new InternalError("不正な演算子が指定されています。");
+			}
+		} else {
+			if (operator==LexicalType.ADD){
+				return new ValueImpl(val1.getIValue()+val2.getIValue());
+			} else if (operator==LexicalType.SUB){
+				return new ValueImpl(val1.getIValue()-val2.getIValue());
+			} else if (operator==LexicalType.MUL){
+				return new ValueImpl(val1.getIValue()*val2.getIValue());
+			} else if (operator==LexicalType.DIV){
+				if (val2.getIValue()!=0){
+					return new ValueImpl(val1.getIValue()/val2.getIValue());
+				} else {
+					throw new CalcurateException("0で除算しました。");
+				}
+			} else {
+				throw new InternalError("不正な演算子が指定されています。");
+			}
+		}
 	}
 
 	public String toString() {

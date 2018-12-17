@@ -31,6 +31,11 @@ public class EndNode extends Node {
 		}
 	}
 
+	public Value getValue(){
+		System.exit(0);
+		return null;
+	}
+
 	public String toString(int indent) {
 		return "END";
 	}

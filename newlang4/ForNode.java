@@ -10,7 +10,7 @@ public class ForNode extends Node {
 	Node init=null;			//初期化
 	Node max=null;			//継続条件の上限値
 	Node operation=null;	//処理内容
-	Node step=null;		//更新対象
+	String step=null;		//更新対象
 
 	//自分のfirstをセットでもっておく
 	private final static Set<LexicalType> FIRST=new HashSet<LexicalType>(Arrays.asList(
@@ -78,12 +78,23 @@ public class ForNode extends Node {
 
 		//更新内容
 		if (env.getInput().peek(1).getType()==LexicalType.NAME){
-			step=VariableNode.getHandrar(env,env.getInput().get().getValue());
+			step=env.getInput().get().getValue().getSValue();
 		} else {
 			throw new SyntaxException("for文の構成が不正です。更新対象がありません。"+env.getInput().getLine()+"行目");
 		}
 	}
 
+	public Value getValue() throws Exception{
+		init.getValue();
+		while(true){
+			if (env.getVariable(step).getValue().getIValue()>max.getValue().getIValue()){
+				return null;
+			}
+			operation.getValue();
+			env.getVariable(step).setValue
+			(new ExprNode(env.getVariable(step),ConstNode.getHandrar(env,new ValueImpl(1)),(LexicalType.ADD)).getValue());
+		}
+	}
 
 	public String toString(int indent) {
 		String ret="";

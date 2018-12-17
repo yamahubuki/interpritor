@@ -45,6 +45,12 @@ public class VariableNode extends Node {
 		}
 	}
 
+	public Value getValue(){
+		return env.getVariable(name).getValue();
+//		return new ValueImpl(name);
+	}
+
+
 	public String toString() {
 		return "•Ï”F"+name;
 	}

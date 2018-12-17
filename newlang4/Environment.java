@@ -1,30 +1,37 @@
 package newlang4;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Arrays;
+import java.util.Hashtable;
 import newlang3.*;
+import newlang5.*;
 
 public class Environment {
 	LexicalAnalyzer input;
-	Map<String,Value> var_table;
-	    
+	Hashtable library;
+	Hashtable var_table;
+
 	public Environment(LexicalAnalyzer my_input) {
 		input = my_input;
-		var_table = new HashMap<String,Value>();
+		library = new Hashtable();
+		library.put("PRINT", new PrintFunction());
+		var_table = new Hashtable();
 	}
-		
+
 	public LexicalAnalyzer getInput() {
 		return input;
 	}		
 
-	public void setValue(String s,Value v){
-		var_table.put(s,v);
+	public Function getFunction(String fname) {
+		return (Function) library.get(fname);
 	}
 
-	public Value getValue(String s){
-//		return value;
-		return null;
+	public Variable getVariable(String vname) {
+		Variable v;
+		v = (Variable) var_table.get(vname);
+		if (v == null) {
+			v = new Variable(vname);
+			var_table.put(vname, v);
+		}
+		return v;
 	}
 }
 

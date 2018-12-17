@@ -4,12 +4,14 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Arrays;
 import newlang3.*;
+import newlang5.*;
 
 public class CondNode extends Node {
 
 	Node left=null;				//左側
 	LexicalType operator=null;	//演算子
 	Node right=null;			//右側
+
 	//自分のfirstをセットでもっておく
 	private final static Set<LexicalType> FIRST=new HashSet<LexicalType>(Arrays.asList(
 		LexicalType.NAME,
@@ -61,6 +63,39 @@ public class CondNode extends Node {
 			right.parse();
 		} else {
 			throw new SyntaxException("条件文中に不正な記号がありました。"+env.getInput().getLine()+"行目");
+		}
+	}
+
+	public Value getValue() throws Exception{
+		Value val1=left.getValue();
+		Value val2=right.getValue();
+		if (val1==null || val2==null){
+			throw new CalcurateException("nullに対して演算を試みました。");
+		}
+		if (val1.getType()==ValueType.STRING || val2.getType()==ValueType.STRING){
+			if (operator==LexicalType.EQ){
+				return new ValueImpl(val1.getSValue().equals(val2.getSValue()));
+			} else if(operator==LexicalType.NE){
+				return new ValueImpl(val1.getSValue()!=val2.getSValue());
+			} else {
+				throw new CalcurateException("文字列に対して無効な演算子が指定されています。");
+			}
+		}
+
+		if (operator==LexicalType.LT){
+			return new ValueImpl(val1.getDValue()<val2.getDValue());
+		} else if (operator==LexicalType.LE){
+			return new ValueImpl(val1.getDValue()<=val2.getDValue());
+		} else if (operator==LexicalType.GT){
+			return new ValueImpl(val1.getDValue()>val2.getDValue());
+		} else if (operator==LexicalType.GE){
+			return new ValueImpl(val1.getDValue()>=val2.getDValue());
+		} else if (operator==LexicalType.EQ){
+			return new ValueImpl(val1.getDValue()==val2.getDValue());
+		} else if (operator==LexicalType.NE){
+			return new ValueImpl(val1.getDValue()!=val2.getDValue());
+		} else {
+			throw new InternalError("不正な演算子で条件判断を試みました。");
 		}
 	}
 

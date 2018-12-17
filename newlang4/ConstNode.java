@@ -11,6 +11,7 @@ public class ConstNode extends Node {
 
 	//自分のfirstをセットでもっておく
 	private final static Set<LexicalType> FIRST=new HashSet<LexicalType>(Arrays.asList(
+		LexicalType.SUB,
 		LexicalType.INTVAL,
 		LexicalType.DOUBLEVAL,
 		LexicalType.LITERAL
@@ -46,6 +47,9 @@ public class ConstNode extends Node {
 		throw new InternalError("Constに対してParseは実行できません。");
 	}
 
+	public Value getValue(){
+		return value;
+	}
 
 	public String toString() {
 		return "定数："+value;

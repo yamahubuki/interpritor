@@ -13,7 +13,7 @@ public class Variable extends Node {
 		public Variable(LexicalUnit u) {
 			var_name = u.getValue().getSValue();
 		}
-		
+
 		public static Node isMatch(Environment my_env, LexicalUnit first) {
 			if (first.getType() == LexicalType.NAME) {
 				Variable v;
@@ -26,11 +26,11 @@ public class Variable extends Node {
 			}
 			return null;
 		}
-		
+
 		public void setValue(Value my_v) {
 			v = my_v;
 		}
-		
+
 		public Value getValue() {
 			return v;
 		}

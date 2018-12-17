@@ -7,7 +7,7 @@ import newlang3.*;
 
 public class SubstNode extends Node {
 
-	Node leftVar=null;
+	String leftVar=null;
 	Node expr=null;
 
 	//自分のfirstをセットでもっておく
@@ -30,7 +30,7 @@ public class SubstNode extends Node {
 
 	public void parse() throws Exception {
 		//Nameが来ることを事前確認済み
-		leftVar=VariableNode.getHandrar(env,env.getInput().get().getValue());
+		leftVar=env.getInput().get().getValue().getSValue();
 
 		//「＝」を取得するが、ここが＝である事はStmtのgethandrer()で確認済み
 		LexicalUnit lu=env.getInput().get();
@@ -41,6 +41,11 @@ public class SubstNode extends Node {
 		} else {
 			throw new SyntaxException("代入文の後半が式として評価できません。("+env.getInput().getLine()+"行目)");
 		}
+	}
+
+	public Value getValue() throws Exception{
+		env.getVariable(leftVar).setValue(expr.getValue());
+		return null;
 	}
 
 	public String toString(int indent) {

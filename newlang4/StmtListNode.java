@@ -57,6 +57,13 @@ public class StmtListNode extends Node {
 		}
 	}
 
+	public Value getValue() throws Exception{
+		for(int i=0;i<list.size();i++){
+			list.get(i).getValue();
+		}
+		return null;
+	}
+
 	public String toString(int indent) {
 		String ret="";
 		for(int i=0;i<indent;i++){

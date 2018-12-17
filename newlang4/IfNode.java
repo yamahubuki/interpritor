@@ -124,6 +124,14 @@ public class IfNode extends Node {
 		}
 	}
 
+	public Value getValue() throws Exception{
+		if (cond.getValue().getBValue()==true){
+			operation.getValue();
+		} else if (elseOperation!=null){
+			elseOperation.getValue();
+		}
+		return null;
+	}
 
 	public String toString(int indent) {
 		String ret="";

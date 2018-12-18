@@ -9,7 +9,6 @@ public class LoopNode extends Node {
 
 	Node cond=null;				//条件
 	Node operation=null;		//trueの時の処理
-	boolean isCondFirst=true;	//条件を前判定するか
 	boolean isDoMust=false;		//条件に関わらず一度は必ず実行するか
 	boolean isUntill=false;		//condの判定条件を逆にするか
 
@@ -89,7 +88,6 @@ public class LoopNode extends Node {
 			}
 
 			if (cond==null){
-				isCondFirst=false;
 				if (!getDoBlockCond()){
 					throw new SyntaxException("DOブロックに必要なWHILEまたはUNTILで始まる条件文がありません。");
 				}
@@ -126,27 +124,13 @@ public class LoopNode extends Node {
 	public Value getValue() throws Exception{
 		if (isDoMust){		//初回の強制実行
 			operation.getValue();
-			if (!isCondFirst){		//後判定なら継続条件確認
-				if (!judge()){
-					return null;
-				}
-			}
 		}
 
 		while(true){
-			if (isCondFirst){
-				if (!judge()){
-					return null;
-				}
+			if (!judge()){
+				return null;
 			}
-
 			operation.getValue();
-
-			if (!isCondFirst){		//後判定なら継続条件確認
-				if (!judge()){
-					return null;
-				}
-			}
 		}
 	}
 
@@ -170,11 +154,6 @@ public class LoopNode extends Node {
 			ret+=")";
 		}
 		ret+="　";
-		if (isCondFirst){
-			ret+="前判定　";
-		} else {
-			ret+="後判定　";
-		}
 		if (isDoMust){
 			ret+="初回強制実行";
 		}

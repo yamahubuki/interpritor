@@ -65,15 +65,22 @@ public class ExprNode extends Node {
 					result.add(ConstNode.getHandrar(env,env.getInput().get().getValue()));
 					break;
 				case SUB:
-					if (env.getInput().peek(2).getType()==LexicalType.INTVAL){
+					if ((env.getInput().peek(2).getType()==LexicalType.INTVAL) || 
+					(env.getInput().peek(2).getType()==LexicalType.DOUBLEVAL) || 
+					(env.getInput().peek(2).getType()==LexicalType.LP) ){
+						env.getInput().get();
+						result.add(ConstNode.getHandrar(env,new ValueImpl(-1)));
+						env.getInput().unget(new LexicalUnit(LexicalType.MUL));
+						break;
+/*
 						env.getInput().get();
 						result.add(ConstNode.getHandrar(env,
 						new ExprNode(ConstNode.getHandrar(env,env.getInput().get().getValue()),
 						ConstNode.getHandrar(env,new ValueImpl(-1)),LexicalType.MUL).getValue()));
+*/
 					} else {
 						throw new SyntaxException("計算式中において不正な－記号が使われています。");
 					}
-					break;
 				case NAME:
 					if (env.getInput().peek(2).getType()==LexicalType.LP){
 						Node tmpNode=CallNode.getHandrar(env);

@@ -100,7 +100,7 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 		}
 	}
 
-	private void unget(LexicalUnit token) throws IOException{
+	public void unget(LexicalUnit token) throws IOException{
 		if (token.getType()==LexicalType.NL){
 			line--;
 		}

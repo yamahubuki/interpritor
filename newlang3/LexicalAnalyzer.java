@@ -8,4 +8,5 @@ public interface LexicalAnalyzer {
 	public LexicalUnit peek(int i) throws IOException,SyntaxException;
     public LexicalUnit get() throws Exception,SyntaxException;
 	public int getLine();
+	public void unget(LexicalUnit lu) throws IOException;
 }

@@ -1,5 +1,7 @@
 package newlang4;
 
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +26,15 @@ public class ExprNode extends Node {
 		LexicalType.LITERAL
 	));
 
+	//演算子とその優先順位
+	private static final Map<LexicalType,Integer> OPERATORS=new HashMap<>();
+	static {
+		OPERATORS.put(LexicalType.DIV,1);
+		OPERATORS.put(LexicalType.MUL,2);
+		OPERATORS.put(LexicalType.SUB,3);
+		OPERATORS.put(LexicalType.ADD,4);
+	}
+
 	public static boolean isMatch(LexicalType type){
 		return FIRST.contains(type);
 	}
@@ -47,7 +58,8 @@ public class ExprNode extends Node {
 		List<Node> result=new ArrayList<>();
 		List<LexicalType> operators = new ArrayList<>();
 
-		add: while(true){
+		while(true){
+System.out.println("1:"+env.getInput().peek(1));
 			switch(env.getInput().peek(1).getType()){
 				case LP:
 					env.getInput().get();
@@ -56,6 +68,7 @@ public class ExprNode extends Node {
 					result.add(h);
 					if (env.getInput().expect(LexicalType.RP)){
 						env.getInput().get();
+					} else {
 						throw new SyntaxException("計算式の構成が不正です。)が見つかりません。"+env.getInput().getLine()+"行目");
 					}
 					break;
@@ -68,10 +81,13 @@ public class ExprNode extends Node {
 					if ((env.getInput().peek(2).getType()==LexicalType.INTVAL) || 
 					(env.getInput().peek(2).getType()==LexicalType.DOUBLEVAL) || 
 					(env.getInput().peek(2).getType()==LexicalType.LP) ){
+System.out.println("3:"+env.getInput().peek(1));
 						env.getInput().get();
+System.out.println("4:"+env.getInput().peek(1));
 						result.add(ConstNode.getHandler(env,new ValueImpl(-1)));
-						env.getInput().unget(new LexicalUnit(LexicalType.MUL));
-						break;
+						addOperator(result,operators,LexicalType.MUL);
+System.out.println("5:"+env.getInput().peek(1));
+						continue;
 					} else {
 						throw new SyntaxException("計算式中において不正な－記号が使われています。");
 					}
@@ -88,65 +104,12 @@ public class ExprNode extends Node {
 					throw new SyntaxException("計算式の構成が不正です。");
 			}
 
-			switch(env.getInput().peek(1).getType()){
-				case ADD:
-					for(int i=operators.size()-1;i>=0;i--){
-						boolean flg=false;
-						if (operators.get(i)==LexicalType.MUL ||
-							operators.get(i)==LexicalType.DIV ||
-							operators.get(i)==LexicalType.SUB){
-							flg=true;
-							result.add(new ExprNode(result.get(result.size()-2),result.get(result.size()-1),operators.get(i)));
-							result.remove(result.size()-3);
-							result.remove(result.size()-2);
-							operators.remove(i);
-						} else if (flg=true && operators.get(i)==LexicalType.ADD){
-							break;
-						}
-					}
-					operators.add(env.getInput().get().getType());
-					break;
-				case SUB:
-					for(int i=operators.size()-1;i>=0;i--){
-						boolean flg=false;
-						if (operators.get(i)==LexicalType.MUL ||
-						operators.get(i)==LexicalType.DIV ){
-							flg=true;
-							result.add(new ExprNode(result.get(result.size()-2),result.get(result.size()-1),operators.get(i)));
-							result.remove(result.size()-3);
-							result.remove(result.size()-2);
-							operators.remove(i);
-						} else if (flg=true &&
-						(operators.get(i)==LexicalType.ADD ||
-						operators.get(i)==LexicalType.SUB)){
-							break;
-						}
-					}
-					operators.add(env.getInput().get().getType());
-					break;
-				case MUL:
-					for(int i=operators.size()-1;i>=0;i--){
-						boolean flg=false;
-						if (operators.get(i)==LexicalType.DIV){
-							flg=true;
-							result.add(new ExprNode(result.get(result.size()-2),result.get(result.size()-1),LexicalType.DIV));
-							result.remove(result.size()-3);
-							result.remove(result.size()-2);
-							operators.remove(i);
-						} else if (flg=true &&
-						(operators.get(i)==LexicalType.MUL ||
-						operators.get(i)==LexicalType.ADD ||
-						operators.get(i)==LexicalType.SUB)){
-							break;
-						}
-					}
-					operators.add(env.getInput().get().getType());
-					break;
-				case DIV:
-					operators.add(env.getInput().get().getType());
-					break;
-				default:
-					break add;
+System.out.println("2:"+env.getInput().peek(1));
+
+			if (OPERATORS.containsKey(env.getInput().peek(1).getType())){
+				addOperator(result,operators,env.getInput().get().getType());
+			} else {
+				break;
 			}
 		}
 		for(int i=operators.size()-1;i>=0;i--){
@@ -161,6 +124,22 @@ public class ExprNode extends Node {
 			result.remove(result.size()-2);
 		} 
 		left=result.get(0);
+	}
+
+	private void addOperator(List<Node> rList,List<LexicalType> oList,LexicalType newOperator) throws Exception{
+		for(int i=oList.size()-1;i>=0;i--){
+			boolean flg=false;
+			if (OPERATORS.get(oList.get(i))<OPERATORS.get(newOperator)){
+				flg=true;
+				rList.add(new ExprNode(rList.get(rList.size()-2),rList.get(rList.size()-1),oList.get(i)));
+				rList.remove(rList.size()-3);
+				rList.remove(rList.size()-2);
+				oList.remove(i);
+			} else if (flg=true && OPERATORS.get(oList.get(i))>=OPERATORS.get(newOperator)){
+				break;
+			}
+		}
+		oList.add(newOperator);
 	}
 
 	public Value getValue() throws Exception{

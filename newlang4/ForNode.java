@@ -10,7 +10,7 @@ public class ForNode extends Node {
 	Node init=null;			//初期化
 	Node max=null;			//継続条件の上限値
 	Node operation=null;	//処理内容
-	String step=null;		//更新対象
+	String step=null;		//更新対象変数名
 
 	//自分のfirstをセットでもっておく
 	private final static Set<LexicalType> FIRST=new HashSet<LexicalType>(Arrays.asList(
@@ -31,10 +31,14 @@ public class ForNode extends Node {
 	}
 
 	public void parse() throws Exception {
-		//forとわかっているのでスルー
-		env.getInput().get();
+		//FORの確認
+		if (env.getInput().expect(LexicalType.FOR)){
+			env.getInput().get();
+		} else {
+			throw new InternalError("for文以外の箇所でForNodeがコールされました。");
+		}
 
-		//substのはず
+		//subst
 		if (SubstNode.isMatch(env.getInput().peek(1).getType())){
 			init=SubstNode.getHandler(env);
 			init.parse();
@@ -43,7 +47,9 @@ public class ForNode extends Node {
 		}
 
 		//TOの確認
-		if (env.getInput().get().getType()!=LexicalType.TO){
+		if (env.getInput().expect(LexicalType.TO)){
+			env.getInput().get();
+		} else {
 			throw new SyntaxException("for文の構成が不正です。TOがありません。"+env.getInput().getLine()+"行目");
 		}
 
@@ -54,8 +60,10 @@ public class ForNode extends Node {
 			throw new SyntaxException("for文の構成が不正です。継続条件の上限値がありません。"+env.getInput().getLine()+"行目");
 		}
 
-		//NL確認
-		if (env.getInput().get().getType()!=LexicalType.NL){
+		//NLの確認
+		if (env.getInput().expect(LexicalType.NL)){
+			env.getInput().get();
+		} else {
 			throw new SyntaxException("for文の構成が不正です。継続条件の後のNLがありません。"+env.getInput().getLine()+"行目");
 		}
 
@@ -67,16 +75,21 @@ public class ForNode extends Node {
 			throw new SyntaxException("for文の構成が不正です。処理内容の記述を検出できません。"+env.getInput().getLine()+"行目");
 		}
 
-		if (env.getInput().get().getType()!=LexicalType.NL){
+		//NL確認
+		if (env.getInput().expect(LexicalType.NL)){
+			env.getInput().get();
+		} else {
 			throw new SyntaxException("for文の構成が不正です。処理内容の後のNLがありません。"+env.getInput().getLine()+"行目");
 		}
 
 		//NEXTの確認
-		if (env.getInput().get().getType()!=LexicalType.NEXT){
+		if (env.getInput().expect(LexicalType.NEXT)){
+			env.getInput().get();
+		} else {
 			throw new SyntaxException("for文の構成が不正です。NEXTがありません。"+env.getInput().getLine()+"行目");
 		}
 
-		//更新内容
+		//更新対象変数名
 		if (env.getInput().peek(1).getType()==LexicalType.NAME){
 			step=env.getInput().get().getValue().getSValue();
 		} else {
@@ -97,8 +110,7 @@ public class ForNode extends Node {
 	}
 
 	public String toString(int indent) {
-		String ret="";
-		ret+="FOR：初期化＝"+init+" 継続上限＝"+max+"　処理内容：[\n";
+		String ret="FOR：初期化＝"+init+" 継続上限＝"+max+"　処理内容：[\n";
 		ret+=operation.toString(indent+1)+"\n";
 		for(int i=0;i<indent;i++){
 			ret+="\t";

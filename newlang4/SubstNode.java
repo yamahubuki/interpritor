@@ -29,11 +29,18 @@ public class SubstNode extends Node {
 	}
 
 	public void parse() throws Exception {
-		//Nameが来ることを事前確認済み
-		leftVar=env.getInput().get().getValue().getSValue();
+		if (env.getInput().expect(LexicalType.NAME)){
+			leftVar=env.getInput().get().getValue().getSValue();
+		} else {
+			throw new InternalError("変数名として不適切な字句でsubstNode.getHandlerがコールされました。");
+		}
 
-		//「＝」を取得するが、ここが＝である事はStmtのgethandrer()で確認済み
-		LexicalUnit lu=env.getInput().get();
+		if (env.getInput().expect(LexicalType.EQ)){
+			env.getInput().get();
+		} else {
+			throw new SyntaxException("代入文に＝がありません。("+env.getInput().getLine()+"行目)");
+		}
+
 
 		if (ExprNode.isMatch(env.getInput().peek(1).getType())){
 			expr=ExprNode.getHandler(env);

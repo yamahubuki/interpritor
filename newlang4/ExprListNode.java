@@ -36,9 +36,9 @@ public class ExprListNode extends Node {
 
 	public void parse() throws Exception {
 		if (ExprNode.isMatch(env.getInput().peek(1).getType())){
-			Node Handler=ExprNode.getHandler(env);
-			Handler.parse();
-			list.add(Handler);
+			Node handler=ExprNode.getHandler(env);
+			handler.parse();
+			list.add(handler);
 		} else {
 			throw new InternalError("関数呼出における引数として不適切です。"+env.getInput().getLine()+"行目");
 		}
@@ -46,16 +46,16 @@ public class ExprListNode extends Node {
 		while(true){
 			//コンマとexprの繰り返し
 
-			if (env.getInput().peek(1).getType()==LexicalType.COMMA){
+			if (env.getInput().expect(LexicalType.COMMA)){
 				env.getInput().get();
 			} else {
 				break;
 			}
 
 			if (ExprNode.isMatch(env.getInput().peek(1).getType())){
-				Node Handler=ExprNode.getHandler(env);
-				Handler.parse();
-				list.add(Handler);
+				Node handler=ExprNode.getHandler(env);
+				handler.parse();
+				list.add(handler);
 			} else {
 				throw new SyntaxException("関数呼び出しにおける引数リストの構成が不正です。"+env.getInput().getLine()+"行目");
 			}

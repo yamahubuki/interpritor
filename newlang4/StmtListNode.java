@@ -38,22 +38,22 @@ public class StmtListNode extends Node {
 	public void parse() throws Exception {
 		while(true){
 			//リスト終端以外のNLを読み飛ばす
-			while(env.getInput().peek(1).getType()==LexicalType.NL &&
+			while(env.getInput().expect(LexicalType.NL) &&
 				StmtListNode.isMatch(env.getInput().peek(2).getType())
 			){
 				env.getInput().get();
 			}
 
-			Node Handler=null;
+			Node handler=null;
 			if (StmtNode.isMatch(env.getInput().peek(1).getType())){
-				Handler=StmtNode.getHandler(env);
+				handler=StmtNode.getHandler(env);
 			} else if (BlockNode.isMatch(env.getInput().peek(1).getType())){
-				Handler=BlockNode.getHandler(env);
+				handler=BlockNode.getHandler(env);
 			} else {
 				break;
 			}
-			Handler.parse();
-			list.add(Handler);
+			handler.parse();
+			list.add(handler);
 		}
 	}
 

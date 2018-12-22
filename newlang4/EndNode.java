@@ -26,7 +26,9 @@ public class EndNode extends Node {
 	}
 
 	public void parse() throws Exception {
-		if (env.getInput().get().getType()!=LexicalType.END){
+		if (env.getInput().expect(LexicalType.END)){
+			env.getInput().get();
+		} else {
 			throw new InternalError("ENDÇ≈ÇÕÇ†ÇËÇ‹ÇπÇÒÅB("+env.getInput().getLine()+"çsñ⁄");
 		}
 	}

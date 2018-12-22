@@ -7,8 +7,8 @@ import newlang3.*;
 
 public class CallNode extends Node {
 
-	String funcName=null;		//関数名
-	ExprListNode arguments=null;		//引数
+	String funcName=null;			//関数名
+	ExprListNode arguments=null;	//引数
 
 	//自分のfirstをセットでもっておく
 	private final static Set<LexicalType> FIRST=new HashSet<LexicalType>(Arrays.asList(
@@ -28,15 +28,11 @@ public class CallNode extends Node {
 		return new CallNode(in);
 	}
 
-	public Value getValue() throws Exception{
-		return env.getFunction(funcName).invoke(arguments);
-	}
-
 	public void parse() throws Exception {
 		boolean isBracket=false;		//括弧があったか否か
 
 		//呼出関数名
-		if (env.getInput().peek(1).getType()==LexicalType.NAME){
+		if (env.getInput().expect(LexicalType.NAME)){
 			funcName=env.getInput().get().getValue().getSValue();
 		} else {
 			throw new SyntaxException("有効な関数名ではありません。("+env.getInput().getLine()+"行目");
@@ -56,12 +52,17 @@ public class CallNode extends Node {
 
 		if (isBracket){
 			//閉じ括弧
-			if (env.getInput().get().getType()!=LexicalType.RP){
+			if (env.getInput().expect(LexicalType.RP)){
+				env.getInput().get();
+			} else {
 				throw new SyntaxException("関数呼出の括弧が閉じられていません。("+env.getInput().getLine()+"行目");
 			}
 		}
 	}
 
+	public Value getValue() throws Exception{
+		return env.getFunction(funcName).invoke(arguments);
+	}
 
 	public String toString(int indent) {
 		return "関数：関数名＝"+funcName+" 引数リスト＝["+arguments+"]";

@@ -54,7 +54,8 @@ public class ExprNode extends Node {
 					Node h=ExprNode.getHandler(env);
 					h.parse();
 					result.add(h);
-					if (env.getInput().get().getType()!=LexicalType.RP){
+					if (env.getInput().expect(LexicalType.RP)){
+						env.getInput().get();
 						throw new SyntaxException("計算式の構成が不正です。)が見つかりません。"+env.getInput().getLine()+"行目");
 					}
 					break;
@@ -71,12 +72,6 @@ public class ExprNode extends Node {
 						result.add(ConstNode.getHandler(env,new ValueImpl(-1)));
 						env.getInput().unget(new LexicalUnit(LexicalType.MUL));
 						break;
-/*
-						env.getInput().get();
-						result.add(ConstNode.getHandler(env,
-						new ExprNode(ConstNode.getHandler(env,env.getInput().get().getValue()),
-						ConstNode.getHandler(env,new ValueImpl(-1)),LexicalType.MUL).getValue()));
-*/
 					} else {
 						throw new SyntaxException("計算式中において不正な－記号が使われています。");
 					}

@@ -76,7 +76,7 @@ public class CondNode extends Node {
 			if (operator==LexicalType.EQ){
 				return new ValueImpl(val1.getSValue().equals(val2.getSValue()));
 			} else if(operator==LexicalType.NE){
-				return new ValueImpl(val1.getSValue()!=val2.getSValue());
+				return new ValueImpl(!val1.getSValue().equals(val2.getSValue()));
 			} else {
 				throw new CalcurateException("•¶š—ñ‚É‘Î‚µ‚Ä–³Œø‚È‰‰Zq‚ªw’è‚³‚ê‚Ä‚¢‚Ü‚·B");
 			}

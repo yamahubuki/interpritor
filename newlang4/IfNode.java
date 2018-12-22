@@ -7,9 +7,9 @@ import newlang3.*;
 
 public class IfNode extends Node {
 
-	Node cond=null;			//条件
-	Node operation=null;	//trueの時の処理
-	Node elseOperation=null;			//elseの時の処理
+	Node cond=null;				//条件
+	Node operation=null;		//trueの時の処理
+	Node elseOperation=null;	//elseの時の処理
 
 	//自分のfirstをセットでもっておく
 	private final static Set<LexicalType> FIRST=new HashSet<LexicalType>(Arrays.asList(
@@ -33,12 +33,16 @@ public class IfNode extends Node {
 		boolean isELSEIF=false;			//ELSEIFの時はENDIFがいらない
 
 		//IFまたはELSEIF
-		if (env.getInput().peek(1).getType()==LexicalType.ELSEIF){
+		if (env.getInput().expect(LexicalType.ELSEIF)){
 			isELSEIF=true;
+			env.getInput().get();
+		} else if (env.getInput().expect(LexicalType.IF)){
+			env.getInput().get();
+		} else {
+			throw new InternalError("IFまたはIFELSE以外の箇所でIFNodeのgetHandlerがコールされました。");
 		}
-		env.getInput().get();
 
-		//Condのはず
+		//Cond
 		if (CondNode.isMatch(env.getInput().peek(1).getType())){
 			cond=CondNode.getHandler(env);
 			cond.parse();
@@ -47,19 +51,20 @@ public class IfNode extends Node {
 		}
 
 		//THENの確認
-		if (env.getInput().get().getType()!=LexicalType.THEN){
+		if (env.getInput().expect(LexicalType.THEN)){
+				env.getInput().get();
+		} else {
 			throw new SyntaxException("IF文の構成が不正です。THENがありません。"+env.getInput().getLine()+"行目");
 		}
 
 		//パターン１　NLの場合＝ブロック
-		//パターン２　stmt+NLの場合
-		//パターン３　stmt+ELSE+stmt+NLの場合
-
+		//パターン２　stmt+NL
+		//パターン３　stmt+ELSE+stmt+NL
 		if (StmtNode.isMatch(env.getInput().peek(1).getType())){
 			operation=StmtNode.getHandler(env);
 			operation.parse();
 
-			if (env.getInput().peek(1).getType()==LexicalType.ELSE){
+			if (env.getInput().expect(LexicalType.ELSE)){
 				env.getInput().get();
 
 				if (StmtNode.isMatch(env.getInput().peek(1).getType())){
@@ -69,29 +74,34 @@ public class IfNode extends Node {
 					throw new SyntaxException("ELSE文の構成が不正です。"+env.getInput().getLine()+"行目");
 				}
 			}
-		} else if (env.getInput().peek(1).getType()==LexicalType.NL){
+		} else if (env.getInput().expect(LexicalType.NL)){
 			//NL
 			env.getInput().get();
 
+			//StmtList
 			if (StmtListNode.isMatch(env.getInput().peek(1).getType())){
 				operation=StmtListNode.getHandler(env);
 				operation.parse();
 			} else {
-				throw new SyntaxException("IF文の構成が不正です。"+env.getInput().getLine()+"行目");
+				throw new SyntaxException("IF文の構成が不正です。処理内容を検出できません。"+env.getInput().getLine()+"行目");
 			}
 
-			if (env.getInput().get().getType()!=LexicalType.NL){
+			if (env.getInput().expect(LexicalType.NL)){
+				env.getInput().get();
+			} else {
 				throw new SyntaxException("IF文の構成が不正です。trueの場合の処理の終端NLを検出できません。"+env.getInput().getLine()+"行目");
 			}
 
-			if (env.getInput().peek(1).getType()==LexicalType.ELSEIF){
+			if (env.getInput().expect(LexicalType.ELSEIF)){
 				elseOperation=IfNode.getHandler(env);
 				elseOperation.parse();
-			} else if (env.getInput().peek(1).getType()==LexicalType.ELSE){
+			} else if (env.getInput().expect(LexicalType.ELSE)){
 				//ELSE
 				env.getInput().get();
 
-				if (env.getInput().get().getType()==LexicalType.NL){
+				if (env.getInput().expect(LexicalType.NL)){
+					env.getInput().get();
+
 					if (StmtListNode.isMatch(env.getInput().peek(1).getType())){
 						elseOperation=StmtListNode.getHandler(env);
 						elseOperation.parse();
@@ -99,17 +109,20 @@ public class IfNode extends Node {
 						throw new SyntaxException("ELSE文の構成が不正です。"+env.getInput().getLine()+"行目");
 					}
 
-					if (env.getInput().get().getType()!=LexicalType.NL){
+					if (env.getInput().expect(LexicalType.NL)){
+						env.getInput().get();
+					} else {
 						throw new SyntaxException("IF文の構成が不正です。elseの場合の処理の終端NLを検出できません。"+env.getInput().getLine()+"行目");
 					}
-
 				} else {
 					throw new SyntaxException("ELSE文の構成が不正です。キーワードELSEの直後には改行文字が必要です。"+env.getInput().getLine()+"行目");
 				}
 			}
 
 			if (!isELSEIF){
-				if (env.getInput().get().getType()!=LexicalType.ENDIF){
+				if (env.getInput().expect(LexicalType.ENDIF)){
+					env.getInput().get();
+				} else {
 					throw new SyntaxException("IF文の構成が不正です。ENDIFがありません。"+env.getInput().getLine()+"行目");
 				}
 			}
@@ -118,7 +131,9 @@ public class IfNode extends Node {
 		}
 
 		if (!isELSEIF){
-			if (env.getInput().get().getType()!=LexicalType.NL){
+			if (env.getInput().expect(LexicalType.NL)){
+				env.getInput().get();
+			} else {
 				throw new SyntaxException("IF文の構成が不正です。終端のNLを検出できません。"+env.getInput().getLine()+"行目");
 			}
 		}

@@ -9,7 +9,7 @@ public class LoopNode extends Node {
 
 	Node cond=null;				//条件
 	Node operation=null;		//trueの時の処理
-	boolean isDoMust=false;		//条件に関わらず一度は必ず実行するか
+	boolean isDo=false;		//条件に関わらず一度は必ず実行するか
 	boolean isUntill=false;		//condの判定条件を逆にするか
 
 	//自分のfirstをセットでもっておく
@@ -32,7 +32,7 @@ public class LoopNode extends Node {
 	}
 
 	public void parse() throws Exception {
-		if (env.getInput().peek(1).getType()==LexicalType.WHILE){
+		if (env.getInput().expect(LexicalType.WHILE)){
 			//WHILEを読み飛ばす
 			env.getInput().get();
 
@@ -43,7 +43,9 @@ public class LoopNode extends Node {
 				throw new SyntaxException("WHILE文の構成が不正です。WHILEの直後が条件式ではありません。"+env.getInput().getLine()+"行目");
 			}
 
-			if (env.getInput().get().getType()!=LexicalType.NL){
+			if (env.getInput().expect(LexicalType.NL)){
+				env.getInput().get();
+			} else {
 				throw new SyntaxException("WHILE文の構成が不正です。条件式の直後には改行文字が必要です。"+env.getInput().getLine()+"行目");
 			}
 
@@ -54,21 +56,27 @@ public class LoopNode extends Node {
 				throw new SyntaxException("WHILE文の構成が不正です。処理内容を検出できません。"+env.getInput().getLine()+"行目");
 			}
 
-			if (env.getInput().get().getType()!=LexicalType.NL){
+			if (env.getInput().expect(LexicalType.NL)){
+				env.getInput().get();
+			} else {
 				throw new SyntaxException("WHILE文の構成が不正です。処理内容の後には改行文字が必要です。"+env.getInput().getLine()+"行目");
 			}
 
-			if (env.getInput().get().getType()!=LexicalType.WEND){
+			if (env.getInput().expect(LexicalType.WEND)){
+				env.getInput().get();
+			} else {
 				throw new SyntaxException("WHILE文の構成が不正です。終端のWENDが見つかりません。"+env.getInput().getLine()+"行目");
 			}
-		} else if (env.getInput().peek(1).getType()==LexicalType.DO){
+		} else if (env.getInput().expect(LexicalType.DO)){
 			//DOを読み飛ばす
 			env.getInput().get();
 
-			isDoMust=true;
+			isDo=true;
 			getDoBlockCond();
 
-			if (env.getInput().get().getType()!=LexicalType.NL){
+			if (env.getInput().expect(LexicalType.NL)){
+				env.getInput().get();
+			} else {
 				throw new SyntaxException("DOブロックの構成が不正です。処理内容の前には改行文字が必要です。"+env.getInput().getLine()+"行目");
 			}
 
@@ -79,11 +87,15 @@ public class LoopNode extends Node {
 				throw new SyntaxException("DOブロックの構成が不正です。処理内容を検出できません。"+env.getInput().getLine()+"行目");
 			}
 
-			if (env.getInput().get().getType()!=LexicalType.NL){
+			if (env.getInput().expect(LexicalType.NL)){
+				env.getInput().get();
+			} else {
 				throw new SyntaxException("DOブロックの構成が不正です。処理内容の後には改行文字が必要です。"+env.getInput().getLine()+"行目");
 			}
 
-			if (env.getInput().get().getType()!=LexicalType.LOOP){
+			if (env.getInput().expect(LexicalType.LOOP)){
+				env.getInput().get();
+			} else {
 				throw new SyntaxException("DOブロックの構成が不正です。処理内容の後には改行文字が必要です。"+env.getInput().getLine()+"行目");
 			}
 
@@ -122,7 +134,7 @@ public class LoopNode extends Node {
 	}
 
 	public Value getValue() throws Exception{
-		if (isDoMust){		//初回の強制実行
+		if (isDo){		//初回の強制実行
 			operation.getValue();
 		}
 
@@ -154,7 +166,7 @@ public class LoopNode extends Node {
 			ret+=")";
 		}
 		ret+="　";
-		if (isDoMust){
+		if (isDo){
 			ret+="初回強制実行";
 		}
 		ret+="[\n"+operation.toString(indent+1);

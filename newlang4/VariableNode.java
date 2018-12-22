@@ -6,51 +6,39 @@ import java.util.Arrays;
 import newlang3.*;
 
 public class VariableNode extends Node {
-
-	String name=null;
+	String var_name;
+	Value v=null;
 
 	//自分のfirstをセットでもっておく
 	private final static Set<LexicalType> FIRST=new HashSet<LexicalType>(Arrays.asList(
 		LexicalType.NAME
 	));
 
+	public VariableNode(String name) {
+		var_name = name;
+	}
+
+	public VariableNode(String name,Value value) {
+		var_name = name;
+		v=value;
+	}
+
 	public static boolean isMatch(LexicalType type){
 		return FIRST.contains(type);
 	}
 
-	private VariableNode(Environment envIn,Value v){
-		env=envIn;
-		type=NodeType.VARIABLE;
-		name=v.getSValue();
+	public void parse(){
 	}
 
-	private VariableNode(Environment envIn){
-		env=envIn;
-		type=NodeType.VARIABLE;
+	public void setValue(Value my_v) {
+		v = my_v;
 	}
 
-	public static Node getHandler(Environment envin,Value v){
-		return new VariableNode(envin,v);
-	}
-
-	public static Node getHandler(Environment envin){
-		return new VariableNode(envin);
-	}
-
-	public void parse() throws Exception {
-		if (env.getInput().peek(1).getType()==LexicalType.NAME){
-			name=env.getInput().get().getValue().getSValue();
-		} else {
-			throw new InternalError("変数名として不適切な文字列です。"+env.getInput().getLine()+"行目");
-		}
-	}
-
-	public Value getValue(){
-		return env.getVariable(name).getValue();
+	public Value getValue() {
+		return v;
 	}
 
 	public String toString() {
-		return "変数："+name;
+		return "変数："+var_name;
 	}
 }
-

@@ -59,7 +59,6 @@ public class ExprNode extends Node {
 		List<LexicalType> operators = new ArrayList<>();
 
 		while(true){
-System.out.println("1:"+env.getInput().peek(1));
 			switch(env.getInput().peek(1).getType()){
 				case LP:
 					env.getInput().get();
@@ -81,12 +80,9 @@ System.out.println("1:"+env.getInput().peek(1));
 					if ((env.getInput().peek(2).getType()==LexicalType.INTVAL) || 
 					(env.getInput().peek(2).getType()==LexicalType.DOUBLEVAL) || 
 					(env.getInput().peek(2).getType()==LexicalType.LP) ){
-System.out.println("3:"+env.getInput().peek(1));
 						env.getInput().get();
-System.out.println("4:"+env.getInput().peek(1));
 						result.add(ConstNode.getHandler(env,new ValueImpl(-1)));
 						addOperator(result,operators,LexicalType.MUL);
-System.out.println("5:"+env.getInput().peek(1));
 						continue;
 					} else {
 						throw new SyntaxException("計算式中において不正な－記号が使われています。");
@@ -97,14 +93,13 @@ System.out.println("5:"+env.getInput().peek(1));
 						tmpNode.parse();
 						result.add(tmpNode);
 					} else {
-						result.add(VariableNode.getHandler(env,env.getInput().get().getValue()));
+//						result.add(VariableNode.getHandler(env,env.getInput().get().getValue()));
+						result.add(env.getVariable(env.getInput().get().getValue().getSValue()));
 					}
 					break;
 				default:
 					throw new SyntaxException("計算式の構成が不正です。");
 			}
-
-System.out.println("2:"+env.getInput().peek(1));
 
 			if (OPERATORS.containsKey(env.getInput().peek(1).getType())){
 				addOperator(result,operators,env.getInput().get().getType());

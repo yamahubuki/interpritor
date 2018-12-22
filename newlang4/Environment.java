@@ -6,14 +6,14 @@ import newlang5.*;
 
 public class Environment {
 	LexicalAnalyzer input;
-	Hashtable library;
-	Hashtable var_table;
+	Hashtable<String,Function> library;
+	Hashtable<String,VariableNode> var_table;
 
 	public Environment(LexicalAnalyzer my_input) {
 		input = my_input;
-		library = new Hashtable();
+		library = new Hashtable<>();
 		library.put("PRINT", new PrintFunction());
-		var_table = new Hashtable();
+		var_table = new Hashtable<>();
 	}
 
 	public LexicalAnalyzer getInput() {
@@ -24,11 +24,11 @@ public class Environment {
 		return (Function) library.get(fname);
 	}
 
-	public Variable getVariable(String vname) {
-		Variable v;
-		v = (Variable) var_table.get(vname);
+	public VariableNode getVariable(String vname) {
+		VariableNode v;
+		v =var_table.get(vname);
 		if (v == null) {
-			v = new Variable(vname);
+			v = new VariableNode(vname);
 			var_table.put(vname, v);
 		}
 		return v;

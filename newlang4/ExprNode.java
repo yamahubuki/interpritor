@@ -40,7 +40,7 @@ public class ExprNode extends Node {
 		operator=o;
 	}
 
-	public static Node getHandrar(Environment in){
+	public static Node getHandler(Environment in){
 		return new ExprNode(in);
 	}
 
@@ -52,7 +52,7 @@ public class ExprNode extends Node {
 			switch(env.getInput().peek(1).getType()){
 				case LP:
 					env.getInput().get();
-					Node h=ExprNode.getHandrar(env);
+					Node h=ExprNode.getHandler(env);
 					h.parse();
 					result.add(h);
 					if (env.getInput().get().getType()!=LexicalType.RP){
@@ -62,32 +62,32 @@ public class ExprNode extends Node {
 				case INTVAL:
 				case DOUBLEVAL:
 				case LITERAL:
-					result.add(ConstNode.getHandrar(env,env.getInput().get().getValue()));
+					result.add(ConstNode.getHandler(env,env.getInput().get().getValue()));
 					break;
 				case SUB:
 					if ((env.getInput().peek(2).getType()==LexicalType.INTVAL) || 
 					(env.getInput().peek(2).getType()==LexicalType.DOUBLEVAL) || 
 					(env.getInput().peek(2).getType()==LexicalType.LP) ){
 						env.getInput().get();
-						result.add(ConstNode.getHandrar(env,new ValueImpl(-1)));
+						result.add(ConstNode.getHandler(env,new ValueImpl(-1)));
 						env.getInput().unget(new LexicalUnit(LexicalType.MUL));
 						break;
 /*
 						env.getInput().get();
-						result.add(ConstNode.getHandrar(env,
-						new ExprNode(ConstNode.getHandrar(env,env.getInput().get().getValue()),
-						ConstNode.getHandrar(env,new ValueImpl(-1)),LexicalType.MUL).getValue()));
+						result.add(ConstNode.getHandler(env,
+						new ExprNode(ConstNode.getHandler(env,env.getInput().get().getValue()),
+						ConstNode.getHandler(env,new ValueImpl(-1)),LexicalType.MUL).getValue()));
 */
 					} else {
 						throw new SyntaxException("計算式中において不正な－記号が使われています。");
 					}
 				case NAME:
 					if (env.getInput().peek(2).getType()==LexicalType.LP){
-						Node tmpNode=CallNode.getHandrar(env);
+						Node tmpNode=CallNode.getHandler(env);
 						tmpNode.parse();
 						result.add(tmpNode);
 					} else {
-						result.add(VariableNode.getHandrar(env,env.getInput().get().getValue()));
+						result.add(VariableNode.getHandler(env,env.getInput().get().getValue()));
 					}
 					break;
 				default:

@@ -24,7 +24,7 @@ public class SubstNode extends Node {
 		type=NodeType.ASSIGN_STMT;
 	}
 
-	public static Node getHandrar(Environment envIn){
+	public static Node getHandler(Environment envIn){
 		return new SubstNode(envIn);
 	}
 
@@ -36,7 +36,7 @@ public class SubstNode extends Node {
 		LexicalUnit lu=env.getInput().get();
 
 		if (ExprNode.isMatch(env.getInput().peek(1).getType())){
-			expr=ExprNode.getHandrar(env);
+			expr=ExprNode.getHandler(env);
 			expr.parse();
 		} else {
 			throw new SyntaxException("‘ã“ü•¶‚ÌŒã”¼‚ª®‚Æ‚µ‚Ä•]‰¿‚Å‚«‚Ü‚¹‚ñB("+env.getInput().getLine()+"s–Ú)");

@@ -39,7 +39,7 @@ public class ConstNode extends Node {
 		value=v;
 	}
 
-	public static Node getHandrar(Environment envin,Value v){
+	public static Node getHandler(Environment envin,Value v){
 		return new ConstNode(envin,v);
 	}
 

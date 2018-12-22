@@ -29,7 +29,7 @@ public class newlang4Main {
 			lex = new LexicalAnalyzerImpl(in);
 			env = new Environment(lex);
 
-			program = Program.getHandrar(env);
+			program = Program.getHandler(env);
 			program.parse();
 			System.out.println(program.toString(0));
 //			System.out.println("value = " + program.getValue());

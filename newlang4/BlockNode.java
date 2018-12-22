@@ -24,11 +24,11 @@ public class BlockNode extends Node {
 		type=NodeType.BLOCK;
 	}
 
-	public static Node getHandrar(Environment envIn) throws Exception{
+	public static Node getHandler(Environment envIn) throws Exception{
 		if (IfNode.isMatch(envIn.getInput().peek(1).getType())){
-			return IfNode.getHandrar(envIn);
+			return IfNode.getHandler(envIn);
 		}else if (LoopNode.isMatch(envIn.getInput().peek(1).getType())){
-			return LoopNode.getHandrar(envIn);
+			return LoopNode.getHandler(envIn);
 		} else {
 			throw new InternalError("BlockNode‚ğ¶¬‚Å‚«‚È‚¢š‹å‚Å‚·B"+envIn.getInput().getLine()+"s–Ú");
 		}

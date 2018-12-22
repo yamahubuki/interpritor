@@ -31,7 +31,7 @@ public class StmtListNode extends Node {
 		type=NodeType.STMT_LIST;
 	}
 
-	public static Node getHandrar(Environment envIn){
+	public static Node getHandler(Environment envIn){
 		return new StmtListNode(envIn);
 	}
 
@@ -44,16 +44,16 @@ public class StmtListNode extends Node {
 				env.getInput().get();
 			}
 
-			Node handrar=null;
+			Node Handler=null;
 			if (StmtNode.isMatch(env.getInput().peek(1).getType())){
-				handrar=StmtNode.getHandrar(env);
+				Handler=StmtNode.getHandler(env);
 			} else if (BlockNode.isMatch(env.getInput().peek(1).getType())){
-				handrar=BlockNode.getHandrar(env);
+				Handler=BlockNode.getHandler(env);
 			} else {
 				break;
 			}
-			handrar.parse();
-			list.add(handrar);
+			Handler.parse();
+			list.add(Handler);
 		}
 	}
 

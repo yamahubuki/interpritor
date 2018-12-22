@@ -29,11 +29,11 @@ public class VariableNode extends Node {
 		type=NodeType.VARIABLE;
 	}
 
-	public static Node getHandrar(Environment envin,Value v){
+	public static Node getHandler(Environment envin,Value v){
 		return new VariableNode(envin,v);
 	}
 
-	public static Node getHandrar(Environment envin){
+	public static Node getHandler(Environment envin){
 		return new VariableNode(envin);
 	}
 
@@ -47,9 +47,7 @@ public class VariableNode extends Node {
 
 	public Value getValue(){
 		return env.getVariable(name).getValue();
-//		return new ValueImpl(name);
 	}
-
 
 	public String toString() {
 		return "•Ï”F"+name;

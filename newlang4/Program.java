@@ -28,8 +28,8 @@ public class Program extends Node {
 		type=NodeType.PROGRAM;
 	}
 
-	public static Node getHandrar(Environment envIn){
-		return StmtListNode.getHandrar(envIn);
+	public static Node getHandler(Environment envIn){
+		return StmtListNode.getHandler(envIn);
 	}
 
 	public void parse() throws Exception {

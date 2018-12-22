@@ -21,7 +21,7 @@ public class EndNode extends Node {
 		type=NodeType.END;
 	}
 
-	public static Node getHandrar(Environment in){
+	public static Node getHandler(Environment in){
 		return new EndNode(in);
 	}
 

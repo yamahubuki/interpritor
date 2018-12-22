@@ -1,4 +1,4 @@
-# BASIC language Interpritor on Java
+# BASIC language interpreter on Java
 
 
 ## 概要
@@ -26,11 +26,14 @@
 - 課題２　文法解析プログラム(SyntaxAnalyzer)
 - Javaのパッケージとなっており、newlang5からも利用している
 
+### newlang5
+
+- 課題３　interpreter
+- Javaのパッケージとなっており、ここまでで作成しなかったクラス郡
 
 ### readme.md
 
 - 本ファイル
-
 
 ### compile.bat
 
@@ -43,6 +46,7 @@
 
 ### newlang3Main.java
 ### newlang4Main.java
+### newlang5Main.java
 
 - 各段階までのプログラムをテストするためのMainクラス
 

@@ -26,7 +26,7 @@ public class ForNode extends Node {
 		type=NodeType.FOR_STMT;
 	}
 
-	public static Node getHandrar(Environment envIn){
+	public static Node getHandler(Environment envIn){
 		return new ForNode(envIn);
 	}
 
@@ -36,7 +36,7 @@ public class ForNode extends Node {
 
 		//substのはず
 		if (SubstNode.isMatch(env.getInput().peek(1).getType())){
-			init=SubstNode.getHandrar(env);
+			init=SubstNode.getHandler(env);
 			init.parse();
 		} else {
 			throw new SyntaxException("FOR文の構成が不正です。初期化条件の指定が誤っています。"+env.getInput().getLine()+"行目");
@@ -49,7 +49,7 @@ public class ForNode extends Node {
 
 		//継続上限となるINTVAL
 		if (env.getInput().peek(1).getType()==LexicalType.INTVAL){
-			max=ConstNode.getHandrar(env,env.getInput().get().getValue());
+			max=ConstNode.getHandler(env,env.getInput().get().getValue());
 		} else {
 			throw new SyntaxException("for文の構成が不正です。継続条件の上限値がありません。"+env.getInput().getLine()+"行目");
 		}
@@ -61,7 +61,7 @@ public class ForNode extends Node {
 
 		//処理内容
 		if (StmtListNode.isMatch(env.getInput().peek(1).getType())){
-			operation=StmtListNode.getHandrar(env);
+			operation=StmtListNode.getHandler(env);
 			operation.parse();
 		} else {
 			throw new SyntaxException("for文の構成が不正です。処理内容の記述を検出できません。"+env.getInput().getLine()+"行目");
@@ -92,7 +92,7 @@ public class ForNode extends Node {
 			}
 			operation.getValue();
 			env.getVariable(step).setValue
-			(new ExprNode(env.getVariable(step),ConstNode.getHandrar(env,new ValueImpl(1)),(LexicalType.ADD)).getValue());
+			(new ExprNode(env.getVariable(step),ConstNode.getHandler(env,new ValueImpl(1)),(LexicalType.ADD)).getValue());
 		}
 	}
 

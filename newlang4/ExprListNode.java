@@ -30,15 +30,15 @@ public class ExprListNode extends Node {
 		type=NodeType.EXPR_LIST;
 	}
 
-	public static ExprListNode getHandrar(Environment envIn){
+	public static ExprListNode getHandler(Environment envIn){
 		return new ExprListNode(envIn);
 	}
 
 	public void parse() throws Exception {
 		if (ExprNode.isMatch(env.getInput().peek(1).getType())){
-			Node handrar=ExprNode.getHandrar(env);
-			handrar.parse();
-			list.add(handrar);
+			Node Handler=ExprNode.getHandler(env);
+			Handler.parse();
+			list.add(Handler);
 		} else {
 			throw new InternalError("関数呼出における引数として不適切です。"+env.getInput().getLine()+"行目");
 		}
@@ -53,9 +53,9 @@ public class ExprListNode extends Node {
 			}
 
 			if (ExprNode.isMatch(env.getInput().peek(1).getType())){
-				Node handrar=ExprNode.getHandrar(env);
-				handrar.parse();
-				list.add(handrar);
+				Node Handler=ExprNode.getHandler(env);
+				Handler.parse();
+				list.add(Handler);
 			} else {
 				throw new SyntaxException("関数呼び出しにおける引数リストの構成が不正です。"+env.getInput().getLine()+"行目");
 			}

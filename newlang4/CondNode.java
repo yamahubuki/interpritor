@@ -40,13 +40,13 @@ public class CondNode extends Node {
 		type=NodeType.COND;
 	}
 
-	public static Node getHandrar(Environment envIn){
+	public static Node getHandler(Environment envIn){
 		return new CondNode(envIn);
 	}
 
 	public void parse() throws Exception {
 		if (ExprNode.isMatch(env.getInput().peek(1).getType())){
-			left=ExprNode.getHandrar(env);
+			left=ExprNode.getHandler(env);
 			left.parse();
 		} else {
 			throw new SyntaxException("条件文の開始が不正です。"+env.getInput().getLine()+"行目");
@@ -59,7 +59,7 @@ public class CondNode extends Node {
 		}
 
 		if (ExprNode.isMatch(env.getInput().peek(1).getType())){
-			right=ExprNode.getHandrar(env);
+			right=ExprNode.getHandler(env);
 			right.parse();
 		} else {
 			throw new SyntaxException("条件文中に不正な記号がありました。"+env.getInput().getLine()+"行目");

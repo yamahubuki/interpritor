@@ -27,7 +27,7 @@ public class LoopNode extends Node {
 		type=NodeType.LOOP_BLOCK;
 	}
 
-	public static Node getHandrar(Environment envIn){
+	public static Node getHandler(Environment envIn){
 		return new LoopNode(envIn);
 	}
 
@@ -37,7 +37,7 @@ public class LoopNode extends Node {
 			env.getInput().get();
 
 			if (CondNode.isMatch(env.getInput().peek(1).getType())){
-				cond=CondNode.getHandrar(env);
+				cond=CondNode.getHandler(env);
 				cond.parse();
 			} else {
 				throw new SyntaxException("WHILE文の構成が不正です。WHILEの直後が条件式ではありません。"+env.getInput().getLine()+"行目");
@@ -48,7 +48,7 @@ public class LoopNode extends Node {
 			}
 
 			if (StmtListNode.isMatch(env.getInput().peek(1).getType())){
-				operation=StmtListNode.getHandrar(env);
+				operation=StmtListNode.getHandler(env);
 				operation.parse();
 			} else {
 				throw new SyntaxException("WHILE文の構成が不正です。処理内容を検出できません。"+env.getInput().getLine()+"行目");
@@ -73,7 +73,7 @@ public class LoopNode extends Node {
 			}
 
 			if (StmtListNode.isMatch(env.getInput().peek(1).getType())){
-				operation=StmtListNode.getHandrar(env);
+				operation=StmtListNode.getHandler(env);
 				operation.parse();
 			} else {
 				throw new SyntaxException("DOブロックの構成が不正です。処理内容を検出できません。"+env.getInput().getLine()+"行目");
@@ -109,7 +109,7 @@ public class LoopNode extends Node {
 			case WHILE:
 				env.getInput().get();
 				if (CondNode.isMatch(env.getInput().peek(1).getType())){
-					cond=CondNode.getHandrar(env);
+					cond=CondNode.getHandler(env);
 					cond.parse();
 				} else {
 					throw new SyntaxException("DOブロックの構成が不正です。WHILEまたはUNTILの直後が条件式ではありません。"+env.getInput().getLine()+"行目");

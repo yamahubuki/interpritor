@@ -22,22 +22,22 @@ public class StmtNode extends Node {
 		throw new InternalError("StmtNodeクラスのインスタンスは生成できません。("+in.getInput().getLine()+"行目)");
 	}
 
-	public static Node getHandrar(Environment envIn) throws Exception{
+	public static Node getHandler(Environment envIn) throws Exception{
 		switch (envIn.getInput().peek(1).getType()){
 			case NAME:
 				if (envIn.getInput().peek(2).getType()==LexicalType.EQ){
-					return SubstNode.getHandrar(envIn);
+					return SubstNode.getHandler(envIn);
 				} else if (ExprListNode.isMatch(envIn.getInput().peek(2).getType())){
-					return CallNode.getHandrar(envIn);
+					return CallNode.getHandler(envIn);
 				} else {
 					throw new SyntaxException("正しい文ではありません。("+envIn.getInput().getLine()+"行目)");
 				}
 			case FOR:
-				return ForNode.getHandrar(envIn);
+				return ForNode.getHandler(envIn);
 			case END:
-				return EndNode.getHandrar(envIn);
+				return EndNode.getHandler(envIn);
 			default:
-				throw new InternalError("StmtNodeに適合しない型でgetHandrarがコールされました。"+envIn.getInput().peek(1).getType());
+				throw new InternalError("StmtNodeに適合しない型でgetHandlerがコールされました。"+envIn.getInput().peek(1).getType());
 		}
 	}
 

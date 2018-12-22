@@ -24,7 +24,7 @@ public class CallNode extends Node {
 		type=NodeType.FUNCTION_CALL;
 	}
 
-	public static Node getHandrar(Environment in){
+	public static Node getHandler(Environment in){
 		return new CallNode(in);
 	}
 
@@ -50,7 +50,7 @@ public class CallNode extends Node {
 
 		//ˆø”ƒŠƒXƒg
 		if (ExprListNode.isMatch(env.getInput().peek(1).getType())){
-			arguments=ExprListNode.getHandrar(env);
+			arguments=ExprListNode.getHandler(env);
 			arguments.parse();
 		}
 

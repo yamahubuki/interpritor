@@ -25,7 +25,7 @@ public class IfNode extends Node {
 		type=NodeType.IF_BLOCK;
 	}
 
-	public static Node getHandrar(Environment in){
+	public static Node getHandler(Environment in){
 		return new IfNode(in);
 	}
 
@@ -40,7 +40,7 @@ public class IfNode extends Node {
 
 		//Condのはず
 		if (CondNode.isMatch(env.getInput().peek(1).getType())){
-			cond=CondNode.getHandrar(env);
+			cond=CondNode.getHandler(env);
 			cond.parse();
 		} else {
 			throw new SyntaxException("IF文の構成が不正です。条件文を検出できません。"+env.getInput().getLine()+"行目");
@@ -56,14 +56,14 @@ public class IfNode extends Node {
 		//パターン３　stmt+ELSE+stmt+NLの場合
 
 		if (StmtNode.isMatch(env.getInput().peek(1).getType())){
-			operation=StmtNode.getHandrar(env);
+			operation=StmtNode.getHandler(env);
 			operation.parse();
 
 			if (env.getInput().peek(1).getType()==LexicalType.ELSE){
 				env.getInput().get();
 
 				if (StmtNode.isMatch(env.getInput().peek(1).getType())){
-					elseOperation=StmtNode.getHandrar(env);
+					elseOperation=StmtNode.getHandler(env);
 					elseOperation.parse();
 				} else {
 					throw new SyntaxException("ELSE文の構成が不正です。"+env.getInput().getLine()+"行目");
@@ -74,7 +74,7 @@ public class IfNode extends Node {
 			env.getInput().get();
 
 			if (StmtListNode.isMatch(env.getInput().peek(1).getType())){
-				operation=StmtListNode.getHandrar(env);
+				operation=StmtListNode.getHandler(env);
 				operation.parse();
 			} else {
 				throw new SyntaxException("IF文の構成が不正です。"+env.getInput().getLine()+"行目");
@@ -85,7 +85,7 @@ public class IfNode extends Node {
 			}
 
 			if (env.getInput().peek(1).getType()==LexicalType.ELSEIF){
-				elseOperation=IfNode.getHandrar(env);
+				elseOperation=IfNode.getHandler(env);
 				elseOperation.parse();
 			} else if (env.getInput().peek(1).getType()==LexicalType.ELSE){
 				//ELSE
@@ -93,7 +93,7 @@ public class IfNode extends Node {
 
 				if (env.getInput().get().getType()==LexicalType.NL){
 					if (StmtListNode.isMatch(env.getInput().peek(1).getType())){
-						elseOperation=StmtListNode.getHandrar(env);
+						elseOperation=StmtListNode.getHandler(env);
 						elseOperation.parse();
 					} else {
 						throw new SyntaxException("ELSE文の構成が不正です。"+env.getInput().getLine()+"行目");

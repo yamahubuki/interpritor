@@ -65,6 +65,6 @@ public class CallNode extends Node {
 	}
 
 	public String toString(int indent) {
-		return "関数：関数名＝"+funcName+" 引数リスト＝["+arguments+"]";
+		return "関数："+funcName+" 引数リスト＝["+arguments+"]";
 	}
 }

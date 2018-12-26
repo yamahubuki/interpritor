@@ -96,7 +96,7 @@ public class LoopNode extends Node {
 			if (env.getInput().expect(LexicalType.LOOP)){
 				env.getInput().get();
 			} else {
-				throw new SyntaxException("DOブロックの構成が不正です。処理内容の後には改行文字が必要です。"+env.getInput().getLine()+"行目");
+				throw new SyntaxException("DOブロックの構成が不正です。ブロック終端を示すLOOP句がありません。"+env.getInput().getLine()+"行目");
 			}
 
 			if (cond==null){

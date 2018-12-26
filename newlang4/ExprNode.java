@@ -122,8 +122,8 @@ public class ExprNode extends Node {
 	}
 
 	private void addOperator(List<Node> rList,List<LexicalType> oList,LexicalType newOperator) throws Exception{
+		boolean flg=false;
 		for(int i=oList.size()-1;i>=0;i--){
-			boolean flg=false;
 			if (OPERATORS.get(oList.get(i))<OPERATORS.get(newOperator)){
 				flg=true;
 				rList.add(new ExprNode(rList.get(rList.size()-2),rList.get(rList.size()-1),oList.get(i)));

@@ -9,7 +9,7 @@ public class PrintFunction extends Function{
     }
 
     public Value invoke(ExprListNode arg) throws Exception {
-		System.out.println(arg.get(0).getSValue());
+		System.out.print(arg.get(0).getSValue());
 		return null;        
     }
 }

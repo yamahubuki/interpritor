@@ -103,6 +103,3 @@ public class CondNode extends Node {
 		return "CONDÅF"+left+" "+operator+" "+right;
 	}
 }
-
-
-

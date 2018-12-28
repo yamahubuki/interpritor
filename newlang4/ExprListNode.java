@@ -45,7 +45,6 @@ public class ExprListNode extends Node {
 
 		while(true){
 			//ƒRƒ“ƒ}‚Æexpr‚ÌŒJ‚è•Ô‚µ
-
 			if (env.getInput().expect(LexicalType.COMMA)){
 				env.getInput().get();
 			} else {
@@ -67,7 +66,7 @@ public class ExprListNode extends Node {
 	}
 
 	public Value get(int i) throws Exception{
-		if (list.size()>=i){
+		if (list.size()>i){
 			return list.get(i).getValue();
 		}else {
 			return null;
@@ -85,4 +84,3 @@ public class ExprListNode extends Node {
 		return tmp;
 	}
 }
-

@@ -12,7 +12,7 @@ public class StmtListNode extends Node {
 	List<Node> list=new ArrayList<>();
 
 	//Ž©•ª‚Ìfirst‚ðƒZƒbƒg‚Å‚à‚Á‚Ä‚¨‚­
-	private final static Set<LexicalType> FIRST=new HashSet<LexicalType>(Arrays.asList(
+	private final static Set<LexicalType> FIRST=new HashSet<>(Arrays.asList(
 		LexicalType.IF,
 		LexicalType.WHILE,
 		LexicalType.DO,
@@ -50,7 +50,7 @@ public class StmtListNode extends Node {
 			} else if (BlockNode.isMatch(env.getInput().peek(1).getType())){
 				handler=BlockNode.getHandler(env);
 			} else {
-				break;
+				return;
 			}
 			handler.parse();
 			list.add(handler);

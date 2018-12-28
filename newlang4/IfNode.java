@@ -131,9 +131,7 @@ public class IfNode extends Node {
 		}
 
 		if (!isELSEIF){
-			if (env.getInput().expect(LexicalType.NL)){
-				env.getInput().get();
-			} else {
+			if (!env.getInput().expect(LexicalType.NL)){
 				throw new SyntaxException("IF文の構成が不正です。終端のNLを検出できません。"+env.getInput().getLine()+"行目");
 			}
 		}

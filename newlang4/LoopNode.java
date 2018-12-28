@@ -108,7 +108,7 @@ public class LoopNode extends Node {
 			throw new InternalError("LOOPBLOCKの開始字句ではありません。");
 		}
 
-		if (env.getInput().get().getType()!=LexicalType.NL){
+		if (!env.getInput().expect(LexicalType.NL)){
 			throw new SyntaxException("LOOPBLOCKの構成が不正です。終端の改行文字を検出できません。"+env.getInput().getLine()+"行目");
 		}
 	}

@@ -44,14 +44,15 @@ public class ExprNode extends Node {
 		type=NodeType.EXPR;
 	}
 
+	public static Node getHandler(Environment in){
+		return new ExprNode(in);
+	}
+
 	public ExprNode(Node l,Node r,LexicalType o){
+		type=NodeType.EXPR;
 		left=l;
 		right=r;
 		operator=o;
-	}
-
-	public static Node getHandler(Environment in){
-		return new ExprNode(in);
 	}
 
 	public void parse() throws Exception {
@@ -93,7 +94,6 @@ public class ExprNode extends Node {
 						tmpNode.parse();
 						result.add(tmpNode);
 					} else {
-//						result.add(VariableNode.getHandler(env,env.getInput().get().getValue()));
 						result.add(env.getVariable(env.getInput().get().getValue().getSValue()));
 					}
 					break;
@@ -145,54 +145,40 @@ public class ExprNode extends Node {
 		Value val2=right.getValue();
 		if (val1==null || val2==null){
 			throw new CalcurateException("nullに対して演算を試みました。");
-		}
-		if (val1.getType()==ValueType.STRING || val2.getType()==ValueType.STRING){
+		} else if (val1.getType()==ValueType.STRING || val2.getType()==ValueType.STRING){
 			if (operator==LexicalType.ADD){
 				return new ValueImpl(val1.getSValue()+val2.getSValue());
 			} else {
 				throw new CalcurateException("文字列に対して減算・乗算・除算を行う事はできません。");
 			}
-		} else if(val1.getType()==ValueType.DOUBLE || val2.getType()==ValueType.DOUBLE){
-			if (operator==LexicalType.ADD){
-				return new ValueImpl(val1.getDValue()+val2.getDValue());
-			} else if (operator==LexicalType.SUB){
-				return new ValueImpl(val1.getDValue()-val2.getDValue());
-			} else if (operator==LexicalType.MUL){
-				return new ValueImpl(val1.getDValue()*val2.getDValue());
-			} else if (operator==LexicalType.DIV){
-				if (val2.getDValue()!=0.00){
-					return new ValueImpl(val1.getDValue()/val2.getDValue());
-				} else {
-					throw new CalcurateException("0で除算しました。");
-				}
+		}
+		double result;
+		if (operator==LexicalType.ADD){
+			result=val1.getDValue()+val2.getDValue();
+		} else if (operator==LexicalType.SUB){
+			result=val1.getDValue()-val2.getDValue();
+		} else if (operator==LexicalType.MUL){
+			result=val1.getDValue()*val2.getDValue();
+		} else if (operator==LexicalType.DIV){
+			if (val2.getDValue()!=0.00){
+				result=val1.getDValue()/val2.getDValue();
 			} else {
-				throw new InternalError("不正な演算子が指定されています。");
+				throw new CalcurateException("0で除算しました。");
 			}
 		} else {
-			if (operator==LexicalType.ADD){
-				return new ValueImpl(val1.getIValue()+val2.getIValue());
-			} else if (operator==LexicalType.SUB){
-				return new ValueImpl(val1.getIValue()-val2.getIValue());
-			} else if (operator==LexicalType.MUL){
-				return new ValueImpl(val1.getIValue()*val2.getIValue());
-			} else if (operator==LexicalType.DIV){
-				if (val2.getIValue()!=0){
-					return new ValueImpl(val1.getIValue()/val2.getIValue());
-				} else {
-					throw new CalcurateException("0で除算しました。");
-				}
-			} else {
-				throw new InternalError("不正な演算子が指定されています。");
-			}
+			throw new InternalError("不正な演算子が指定されています。");
+		}
+		if(val1.getType()==ValueType.DOUBLE || val2.getType()==ValueType.DOUBLE){
+			return new ValueImpl(result);
+		} else {
+			return new ValueImpl((int)result);
 		}
 	}
 
 	public String toString() {
-		String tmp="[";
-		tmp+=left.toString();
+		String tmp="["+left.toString();
 		if (operator!=null){
-			tmp+=" "+operator.toString()+" ";
-			tmp+=right.toString();
+			tmp+=" "+operator.toString()+" "+right.toString();
 		}
 		return tmp+"]";
 	}

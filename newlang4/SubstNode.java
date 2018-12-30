@@ -58,4 +58,8 @@ public class SubstNode extends Node {
 	public String toString(int indent) {
 		return "SUBST:"+expr.toString()+"Å®"+leftVar.toString()+"";
 	}
+
+	public String toString() {
+		return toString(0);
+	}
 }

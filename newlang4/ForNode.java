@@ -13,7 +13,7 @@ public class ForNode extends Node {
 	String step=null;		//更新対象変数名
 
 	//自分のfirstをセットでもっておく
-	private final static Set<LexicalType> FIRST=new HashSet<LexicalType>(Arrays.asList(
+	private final static Set<LexicalType> FIRST=new HashSet<>(Arrays.asList(
 		LexicalType.FOR
 	));
 

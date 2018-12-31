@@ -12,7 +12,7 @@ public class IfNode extends Node {
 	Node elseOperation=null;	//else‚Ì‚Ìˆ—
 
 	//©•ª‚Ìfirst‚ğƒZƒbƒg‚Å‚à‚Á‚Ä‚¨‚­
-	private final static Set<LexicalType> FIRST=new HashSet<LexicalType>(Arrays.asList(
+	private final static Set<LexicalType> FIRST=new HashSet<>(Arrays.asList(
 		LexicalType.IF
 	));
 

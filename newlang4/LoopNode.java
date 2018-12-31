@@ -13,7 +13,7 @@ public class LoopNode extends Node {
 	boolean isUntill=false;		//cond‚Ì”»’èğŒ‚ğ‹t‚É‚·‚é‚©
 
 	//©•ª‚Ìfirst‚ğƒZƒbƒg‚Å‚à‚Á‚Ä‚¨‚­
-	private final static Set<LexicalType> FIRST=new HashSet<LexicalType>(Arrays.asList(
+	private final static Set<LexicalType> FIRST=new HashSet<>(Arrays.asList(
 		LexicalType.WHILE,
 		LexicalType.DO
 	));

@@ -11,7 +11,7 @@ public class CallNode extends Node {
 	ExprListNode arguments=null;	//ˆø”
 
 	//©•ª‚Ìfirst‚ğƒZƒbƒg‚Å‚à‚Á‚Ä‚¨‚­
-	private final static Set<LexicalType> FIRST=new HashSet<LexicalType>(Arrays.asList(
+	private final static Set<LexicalType> FIRST=new HashSet<>(Arrays.asList(
 		LexicalType.NAME
 	));
 

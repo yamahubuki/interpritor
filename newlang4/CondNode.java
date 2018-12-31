@@ -13,7 +13,7 @@ public class CondNode extends Node {
 	Node right=null;			//右側
 
 	//自分のfirstをセットでもっておく
-	private final static Set<LexicalType> FIRST=new HashSet<LexicalType>(Arrays.asList(
+	private final static Set<LexicalType> FIRST=new HashSet<>(Arrays.asList(
 		LexicalType.NAME,
 		LexicalType.SUB,
 		LexicalType.LP,

@@ -10,7 +10,7 @@ public class ConstNode extends Node {
 	Value value=null;
 
 	//自分のfirstをセットでもっておく
-	private final static Set<LexicalType> FIRST=new HashSet<LexicalType>(Arrays.asList(
+	private final static Set<LexicalType> FIRST=new HashSet<>(Arrays.asList(
 		LexicalType.SUB,
 		LexicalType.INTVAL,
 		LexicalType.DOUBLEVAL,
@@ -52,6 +52,6 @@ public class ConstNode extends Node {
 	}
 
 	public String toString() {
-		return "定数："+value;
+		return "定数："+value.toString().replace("\n","\\n");
 	}
 }

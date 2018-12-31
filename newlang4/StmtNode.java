@@ -8,7 +8,7 @@ import newlang3.*;
 public class StmtNode extends Node {
 
 	//Ž©•ª‚Ìfirst‚ðƒZƒbƒg‚Å‚à‚Á‚Ä‚¨‚­
-	private final static Set<LexicalType> FIRST=new HashSet<LexicalType>(Arrays.asList(
+	private final static Set<LexicalType> FIRST=new HashSet<>(Arrays.asList(
 		LexicalType.NAME,
 		LexicalType.FOR,
 		LexicalType.END

@@ -57,9 +57,9 @@ public class Program extends Node {
 		return null;
 	}
 
-	public String toString() {
+	public String toString(int indent) {
 		if (list!=null){
-			return list.toString();
+			return list.toString(indent);
 		}
 		return "";
 	}

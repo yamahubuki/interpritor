@@ -52,6 +52,17 @@ public class ConstNode extends Node {
 	}
 
 	public String toString() {
-		return "’è”F"+value.toString().replace("\n","\\n");
+		if (value.getType()==ValueType.STRING){
+			return "•¶š—ñF\""+value.toString().replace("\n","\\n")+"\"";
+		} else {
+			return "’è”F"+value.toString();
+		}
 	}
 }
+
+
+
+
+
+
+

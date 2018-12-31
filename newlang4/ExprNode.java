@@ -108,7 +108,7 @@ public class ExprNode extends Node {
 			}
 		}
 		for(int i=operators.size()-1;i>=0;i--){
-			if (operators.size()==1){
+			if (i==0){
 				left=result.get(0);
 				right=result.get(1);
 				operator=operators.get(0);
